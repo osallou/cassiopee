@@ -1,0 +1,2 @@
+Search an exact or approximate word (hamming or edit distance) in a string.
+Support cache mechanism and REST interface.
