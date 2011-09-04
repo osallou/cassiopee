@@ -68,7 +68,8 @@ module Cassiopee
                             @suffixes[@suffixmd5] << @position
                         else
                             # Add position, write new suffix
-                            @suffixes[@suffixmd5] = Array[@position]
+                            # First elt is size of elt
+                            @suffixes[@suffixmd5] = Array[i, @position]
                             File.open(@file_suffix+FILE_SUFFIX_EXT, 'a') {|f| f.write(@suffixmd5+"\n"+@suffix+"\n") }
                         end
                     end
