@@ -19,6 +19,9 @@ module Cassiopee
             @file_suffix = "crawler"
         end
     
+        def setLogLevel(level)
+            $log.level = level
+        end
         
         def index(f)
          # Parse file, map letters to reduced alphabet
