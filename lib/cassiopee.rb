@@ -23,14 +23,17 @@ module Cassiopee
             $log.level = level
         end
         
-        def index(f)
+        def indexFile(f)
          # Parse file, map letters to reduced alphabet
          # Later on, use binary map instead of ascii map
          # Take all suffix, order by length, link to position map on other file
          # Store md5 for easier compare? + 20 bytes per suffix
-         sequence2index = readSequence(f)
-            
+            sequence2index = readSequence(f)
+            parseSuffixes(sequence2index)
+        end
         
+        def indexString(s)
+            parseSuffixes(s)
         end
         
         def searchExact(s)
