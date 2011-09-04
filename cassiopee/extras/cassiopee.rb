@@ -4,6 +4,7 @@ module Cassiopee
  
     attr_accessor  :curpage, :resultPerPage, :useAmbiguity
     
+    
         def initialize
             @curpage = 0
             @resultPerPage = 100
@@ -41,24 +42,30 @@ module Cassiopee
         end
         
         private
-        
-         def readSequence(s)
-         counter = 1
-         sequence = ''
-            begin
-                file = File.new(s, "r")
-            	while (line = file.gets)
-            		puts "#{counter}: #{line}"
-            		counter = counter + 1
-                    sequence += #{line}.chomp
-            	end
-            	file.close
-            rescue => err
-            	puts "Exception: #{err}"
-            	err
+            def parseSuffixes(s)
+                ((s.length-1)..0).each do |i|
+                
+                end
+            
             end
-            return sequence
-         end
+          
+            def readSequence(s)
+                 counter = 1
+                 sequence = ''
+                    begin
+                        file = File.new(s, "r")
+                    	while (line = file.gets)
+                    		puts "#{counter}: #{line}"
+                    		counter = counter + 1
+                            sequence += #{line}.chomp
+                    	end
+                    	file.close
+                    rescue => err
+                    	puts "Exception: #{err}"
+                    	err
+                    end
+                    return sequence
+             end
     end
 
 end
