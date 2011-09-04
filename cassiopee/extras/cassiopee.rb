@@ -1,14 +1,22 @@
+require 'digest/md5'
+
 module Cassiopee
 
     class Crawler
  
-    attr_accessor  :curpage, :resultPerPage, :useAmbiguity
+    attr_accessor  :curpage, :resultPerPage, :useAmbiguity, :file_suffix
     
+    FILE_SUFFIX_EXT = ".sfx"
+    FILE_SUFFIX_POS = ".sfp"
+    
+    $log = Logger.new(STDOUT)
+    $log.level = Logger::DEBUG
     
         def initialize
             @curpage = 0
             @resultPerPage = 100
             @useAmbiguity = false
+            @file_suffix = "crawler"
         end
     
         
@@ -42,11 +50,34 @@ module Cassiopee
         end
         
         private
-            def parseSuffixes(s)
-                ((s.length-1)..0).each do |i|
-                
-                end
+            @suffix = undef
+            @suffixmd5 = undef
+            @position = 0
             
+            @suffixes = Hash.new
+        
+            def parseSuffixes(s)
+                ((s.length)..1).each do |i|
+                    (0..(s.length-i)).each do |j|
+                        @suffix = s[j,i]
+                        @suffixmd5 = Digest::MD5.hexdigest(@suffix)
+                        @position = j
+                        $log.debug("add "+@suffix+" at pos "+@position)
+                        if(@suffixes.has_key?(@suffixmd5))
+                            # Add position
+                            @suffixes[@suffixmd5] << @position
+                        else
+                            # Add position, write new suffix
+                            @suffixes[@suffixmd5] = Array[@position]
+                            File.open(@file_suffix+FILE_SUFFIX_EXT, 'a') {|f| f.write(@suffixmd5+"\n"+@suffix+"\n") }
+                        end
+                    end
+                end
+                marshal_dump = Marshal.dump(@suffixes)
+                sfxpos = File.new(@file_suffix+FILE_SUFFIX_POS,'w')
+                sfxpos = Zlib::GzipWriter.new(sfxpos)
+                sfxpos.write marshal_dump
+                sfxpos.close
             end
           
             def readSequence(s)
@@ -55,7 +86,6 @@ module Cassiopee
                     begin
                         file = File.new(s, "r")
                     	while (line = file.gets)
-                    		puts "#{counter}: #{line}"
                     		counter = counter + 1
                             sequence += #{line}.chomp
                     	end
