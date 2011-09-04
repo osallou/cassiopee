@@ -1,4 +1,6 @@
 require 'digest/md5'
+require 'logger'
+require 'zlib'
 
 module Cassiopee
 
@@ -17,6 +19,12 @@ module Cassiopee
             @resultPerPage = 100
             @useAmbiguity = false
             @file_suffix = "crawler"
+            
+            @suffix = nil
+            @suffixmd5 = nil
+            @position = 0
+            
+            @suffixes = Hash.new
         end
     
         def setLogLevel(level)
@@ -39,6 +47,14 @@ module Cassiopee
         def searchExact(s)
          # Search required length, compare (compare md5?)
          # MD5 = 128 bits, easier to compare for large strings
+            @suffixes = loadSuffixes(@file_suffix+FILE_SUFFIX_POS)
+            matchsize = s.length
+            matchmd5 = Digest::MD5.hexdigest
+            @suffixes.each do |md5val,posArray|
+                if (k == matchmd5)
+                    puts posArray.to_s
+                end
+            end
          
         
         end
@@ -56,19 +72,16 @@ module Cassiopee
         end
         
         private
-            @suffix = undef
-            @suffixmd5 = undef
-            @position = 0
-            
-            @suffixes = Hash.new
         
             def parseSuffixes(s)
-                ((s.length)..1).each do |i|
+                File.delete(@file_suffix+FILE_SUFFIX_EXT)
+                File.delete(@file_suffix+FILE_SUFFIX_POS)
+                (s.length).downto(1)  do |i|
                     (0..(s.length-i)).each do |j|
                         @suffix = s[j,i]
                         @suffixmd5 = Digest::MD5.hexdigest(@suffix)
                         @position = j
-                        $log.debug("add "+@suffix+" at pos "+@position)
+                        $log.debug("add "+@suffix+" at pos "+@position.to_s)
                         if(@suffixes.has_key?(@suffixmd5))
                             # Add position
                             @suffixes[@suffixmd5] << @position
@@ -94,7 +107,7 @@ module Cassiopee
                         file = File.new(s, "r")
                     	while (line = file.gets)
                     		counter = counter + 1
-                            sequence += #{line}.chomp
+                            sequence << line.chomp
                     	end
                     	file.close
                     rescue => err
@@ -103,6 +116,22 @@ module Cassiopee
                     end
                     return sequence
              end
+             
+             
+            def loadSuffixes(file_name)
+                begin
+                  file = Zlib::GzipReader.open(file_name)
+                rescue Zlib::GzipFile::Error
+                  file = File.open(file_name, 'r')
+                ensure
+                    obj = Marshal.load file.read
+                    file.close
+                    return obj
+                end
+            end
+             
+             
+             
     end
 
 end
