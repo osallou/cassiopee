@@ -4,10 +4,23 @@ require 'zlib'
 
 module Cassiopee
 
-    def computeDistance(hamming,edit)
+    def computeDistance(hamming,edit,pattern)
       puts "compute distance with "<<hamming.to_s<<" and "<<edit.to_s
     end
-
+    
+    def computeHamming(hamming,pattern)
+    	nberr = 0
+    	(0..(self.length-1)).each do |c|
+    		if(pattern[c] != self[c])
+    			nberr = nberr+1
+    			if(nberr>hamming.to_i)
+    				return -1		
+    			end
+    		end
+    	end
+    	return nberr
+    end
+    
     class Crawler
  
     attr_accessor  :curpage, :resultPerPage, :useAmbiguity, :file_suffix
