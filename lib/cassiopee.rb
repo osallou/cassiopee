@@ -117,7 +117,7 @@ module Cassiopee
             matchmd5 = Digest::MD5.hexdigest(s)
             @suffixes.each do |md5val,posArray|
                 if (md5val == matchmd5)
-                    match = Array[md5val,posArray]
+                    match = Array[md5val, 0, posArray]
 		    		$log.debug "Match: " << match.inspect
 		    		@matches << match
                 end
@@ -126,7 +126,11 @@ module Cassiopee
         
         end
         
-        def searchApproximate(s,hamming,edit)
+        def searchApproximate(s,edit)
+        	if(edit==0) 
+        		return searchExact(s)
+        	end
+        
         	@suffixes = loadSuffixes(@file_suffix+FILE_SUFFIX_POS)
             minmatchsize = s.length - edit
             maxmatchsize = s.length + edit
@@ -136,7 +140,7 @@ module Cassiopee
         	
         	@suffixes.each do |md5val,posArray|
         		if (md5val == matchmd5)
-                    match = Array[md5val,posArray]
+                    match = Array[md5val, 0, posArray]
 		    		$log.debug "Match: " << match.inspect
 		    		@matches << match
 		    	else
@@ -144,9 +148,9 @@ module Cassiopee
 		    			# Get string
 		    			seq = extractSuffix(md5val)
 		    			seq.extend(Cassiopee)
-		    			errors = seq.computeEdit(s,edit+hamming)
+		    			errors = seq.computeEdit(s,edit)
 		    			if(errors>=0)
-		    			    match = Array[md5val,posArray]
+		    			    match = Array[md5val, errors, posArray]
 		    				$log.debug "Match: " << match.inspect
 		    				@matches << match
 		    			end
@@ -159,12 +163,14 @@ module Cassiopee
         end
         
         def extractSuffix(md5val)
+        	sequence = ''
                 begin
                     file = File.new(@file_suffix+FILE_SUFFIX_EXT, "r")
                 	while (line = file.gets)
 						if(line.chomp == md5val)
 							line = file.gets
                         	sequence << line.chomp
+                        	break
                         else
                         	line = file.gets
                         end
@@ -174,7 +180,7 @@ module Cassiopee
                 	puts "Exception: #{err}"
                 	return nil
                 end
-        
+        	return sequence
         end
         
         # Iterates over matches
