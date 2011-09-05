@@ -9,7 +9,6 @@ module Cassiopee
     # Return -1 if max is reached
     
     def computeDistance(pattern,hamming,edit)
-      puts "compute distance with "<<hamming.to_s<<" and "<<edit.to_s
       if(edit==0)
       	return computeHamming(pattern,hamming)
       else
