@@ -9,7 +9,7 @@ module Cassiopee
       if(edit==0)
       	computeHamming(pattern,hamming)
       else
-       computeEdit(pattern,hamming,edit)
+       computeEdit(pattern,edit)
       end
     end
     
@@ -26,7 +26,7 @@ module Cassiopee
     	return nberr
     end
     
-    def computeEdit(pattern,hamming,edit)
+    def computeEdit(pattern,edit)
     	matrix= Array.new(2)
     	matrix[0] = Array.new(pattern.length+1)
     	matrix[1] = Array.new(pattern.length+1)
@@ -58,7 +58,9 @@ module Cassiopee
     	end
     	p = c
     	c = (c + 1).modulo(2)
-    	
+    	if(matrix[p][pattern.length]>edit)
+    		return -1
+    	end
     	return matrix[p][pattern.length]
     	
     end
@@ -84,6 +86,9 @@ module Cassiopee
             @position = 0
             
             @suffixes = Hash.new
+            
+            @matches = nil
+            @curmatch = 0
         end
     
         def setLogLevel(level)
@@ -104,7 +109,7 @@ module Cassiopee
         end
         
         def searchExact(s)
-         matches = Array.new
+         @matches = Array.new
          # Search required length, compare (compare md5?)
          # MD5 = 128 bits, easier to compare for large strings
             @suffixes = loadSuffixes(@file_suffix+FILE_SUFFIX_POS)
@@ -113,20 +118,74 @@ module Cassiopee
             @suffixes.each do |md5val,posArray|
                 if (md5val == matchmd5)
                     match = Array[md5val,posArray]
-		    $log.debug "Match: " << match.inspect
-		    matches << match
+		    		$log.debug "Match: " << match.inspect
+		    		@matches << match
                 end
             end
-        return matches 
+        return @matches 
         
         end
         
         def searchApproximate(s,hamming,edit)
+        	@suffixes = loadSuffixes(@file_suffix+FILE_SUFFIX_POS)
+            minmatchsize = s.length - edit
+            maxmatchsize = s.length + edit
+            matchmd5 = Digest::MD5.hexdigest(s)
+            
+        	@matches = Array.new
+        	
+        	@suffixes.each do |md5val,posArray|
+        		if (md5val == matchmd5)
+                    match = Array[md5val,posArray]
+		    		$log.debug "Match: " << match.inspect
+		    		@matches << match
+		    	else
+		    		if(posArray[0]>= minmatchsize && posArray[0] <= maxmatchsize)
+		    			# Get string
+		    			seq = extractSuffix(md5val)
+		    			seq.extend(Cassiopee)
+		    			errors = seq.computeEdit(s,edit+hamming)
+		    			if(errors>=0)
+		    			    match = Array[md5val,posArray]
+		    				$log.debug "Match: " << match.inspect
+		    				@matches << match
+		    			end
+		    		end
+                end
+        	
+        	end
+        	
+        	return @matches 
+        end
+        
+        def extractSuffix(md5val)
+                begin
+                    file = File.new(@file_suffix+FILE_SUFFIX_EXT, "r")
+                	while (line = file.gets)
+						if(line.chomp == md5val)
+							line = file.gets
+                        	sequence << line.chomp
+                        else
+                        	line = file.gets
+                        end
+                    end
+                	file.close
+                rescue => err
+                	puts "Exception: #{err}"
+                	return nil
+                end
         
         end
         
+        # Iterates over matches
         def next
-        
+        	if(curmatch<@matches.length)
+        		@curmatch = @curmatch + 1
+        		return matches[@curmatch-1]
+        	else
+        		@curmatch = 0
+        		return nil
+        	end
         end
         
         def to_s
