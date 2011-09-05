@@ -4,11 +4,16 @@ require 'zlib'
 
 module Cassiopee
 
-    def computeDistance(hamming,edit,pattern)
+    def computeDistance(pattern,hamming,edit)
       puts "compute distance with "<<hamming.to_s<<" and "<<edit.to_s
+      if(edit==0)
+      	computeHamming(pattern,hamming)
+      else
+       computeEdit(pattern,hamming,edit)
+      end
     end
     
-    def computeHamming(hamming,pattern)
+    def computeHamming(pattern,hamming)
     	nberr = 0
     	(0..(self.length-1)).each do |c|
     		if(pattern[c] != self[c])
@@ -19,6 +24,43 @@ module Cassiopee
     		end
     	end
     	return nberr
+    end
+    
+    def computeEdit(pattern,hamming,edit)
+    	matrix= Array.new(2)
+    	matrix[0] = Array.new(pattern.length+1)
+    	matrix[1] = Array.new(pattern.length+1)
+    	(0..(pattern.length)).each do |i|
+    		matrix[0][i]=i
+    		matrix[1][i]=i
+    	end
+    	c=0
+    	p=1
+    	(1..(self.length)).each do |i|
+    		c = i.modulo(2)
+    		p = (i+1).modulo(2)
+    		matrix[c][0] = i
+        	(1..(pattern.length)).each do |j|
+        		# Bellman's principle of optimality
+        		weight = 0
+    			if(pattern[i-1] != self[j-1])
+    					weight = 1
+    			end
+    			weight = matrix[p][j-1] + weight
+    			if(weight > matrix[p][j] +1)
+    				weight = matrix[p][j] +1
+    			end
+    			if(weight > matrix[c][j-1] +1)
+    				weight = matrix[c][j-1] +1
+    			end
+    			matrix[c][j] = weight
+    		end	
+    	end
+    	p = c
+    	c = (c + 1).modulo(2)
+    	
+    	return matrix[p][pattern.length]
+    	
     end
     
     class Crawler
