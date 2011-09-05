@@ -45,17 +45,20 @@ module Cassiopee
         end
         
         def searchExact(s)
+         matches = Array.new
          # Search required length, compare (compare md5?)
          # MD5 = 128 bits, easier to compare for large strings
             @suffixes = loadSuffixes(@file_suffix+FILE_SUFFIX_POS)
             matchsize = s.length
-            matchmd5 = Digest::MD5.hexdigest
+            matchmd5 = Digest::MD5.hexdigest(s)
             @suffixes.each do |md5val,posArray|
-                if (k == matchmd5)
-                    puts posArray.to_s
+                if (md5val == matchmd5)
+                    match = Array[md5val,posArray]
+		    $log.debug "Match: " << match.inspect
+		    matches << match
                 end
             end
-         
+        return matches 
         
         end
         
@@ -74,8 +77,8 @@ module Cassiopee
         private
         
             def parseSuffixes(s)
-                File.delete(@file_suffix+FILE_SUFFIX_EXT)
-                File.delete(@file_suffix+FILE_SUFFIX_POS)
+                File.delete(@file_suffix+FILE_SUFFIX_EXT) unless !File.exists?(@file_suffix+FILE_SUFFIX_EXT)
+                File.delete(@file_suffix+FILE_SUFFIX_POS) unless !File.exists?(@file_suffix+FILE_SUFFIX_POS)
                 (s.length).downto(1)  do |i|
                     (0..(s.length-i)).each do |j|
                         @suffix = s[j,i]
