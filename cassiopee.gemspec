@@ -8,4 +8,7 @@ Gem::Specification.new do |s|
   s.homepage = %q{https://github.com/osallou/cassiopee}
   s.description = %q{Cassiopee index one String and provide methods to search exact match or approximate matches with Hammming and/or edit distance.}
   s.files = [ "README", "Changelog", "LICENSE", "demo.rb", "lib/cassiopee.rb"]
+  s.has_rdoc = true
+  s.rdoc_options << '--main lib/cassiopee.rb'
+  s.license = 'LGPL-3'
 end

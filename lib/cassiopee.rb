@@ -21,6 +21,7 @@ module Cassiopee
     # Return -1 if max is reached
     
     def computeHamming(pattern,hamming)
+    	pattern = pattern.downcase
     	nberr = 0
     	(0..(self.length-1)).each do |c|
     		if(pattern[c] != self[c])
@@ -38,6 +39,7 @@ module Cassiopee
     # Return -1 if max is reached
     
     def computeEdit(pattern,edit)
+    	pattern = pattern.downcase
     	matrix= Array.new(2)
     	matrix[0] = Array.new(pattern.length+1)
     	matrix[1] = Array.new(pattern.length+1)
@@ -80,10 +82,12 @@ module Cassiopee
  
     class Crawler
  
-    attr_accessor  :curpage, :resultPerPage, :useAmbiguity, :file_suffix
+    attr_accessor  :curpage, :resultPerPage, :useAmbiguity, :file_suffix, :maxthread
     
     FILE_SUFFIX_EXT = ".sfx"
     FILE_SUFFIX_POS = ".sfp"
+
+    $maxthread = 1
     
     $log = Logger.new(STDOUT)
     $log.level = Logger::DEBUG
@@ -168,7 +172,7 @@ module Cassiopee
 		    	else
 		    		if(posArray[0]>= minmatchsize && posArray[0] <= maxmatchsize)
 		    			# Get string
-		    			seq = extractSuffix(md5val)
+		    			seq = extractSuffix(posArray[1],posArray[0])
 		    			seq.extend(Cassiopee)
 		    			errors = seq.computeEdit(s,edit)
 		    			if(errors>=0)
@@ -186,19 +190,21 @@ module Cassiopee
         
         # Extract un suffix from suffix file based on md5 match
         
-        def extractSuffix(md5val)
+        def extractSuffix(start,len)
         	sequence = ''
                 begin
-                    file = File.new(@file_suffix+FILE_SUFFIX_EXT, "r")
-                	while (line = file.gets)
-						if(line.chomp == md5val)
-							line = file.gets
-                        	sequence << line.chomp
-                        	break
-                        else
-                        	line = file.gets
-                        end
-                    end
+                	file = File.new(@file_suffix+FILE_SUFFIX_EXT, "r")
+		    	file.pos = start
+			sequence = file.read(len)
+                	#while (line = file.gets)
+			#	if(line.chomp == md5val)
+			#		line = file.gets
+                        #		sequence << line.chomp
+                        #		break
+                        #	else
+                        #		line = file.gets
+                        #	end
+                    	#end
                 	file.close
                 rescue => err
                 	puts "Exception: #{err}"
@@ -231,14 +237,15 @@ module Cassiopee
         	# * creates a suffix position file
         	
             def parseSuffixes(s)
-                File.delete(@file_suffix+FILE_SUFFIX_EXT) unless !File.exists?(@file_suffix+FILE_SUFFIX_EXT)
+            	$log.info('Start indexing')
+            	nbSuffix = 0
                 File.delete(@file_suffix+FILE_SUFFIX_POS) unless !File.exists?(@file_suffix+FILE_SUFFIX_POS)
                 (s.length).downto(1)  do |i|
                     (0..(s.length-i)).each do |j|
                         @suffix = s[j,i]
                         @suffixmd5 = Digest::MD5.hexdigest(@suffix)
                         @position = j
-                        $log.debug("add "+@suffix+" at pos "+@position.to_s)
+                        #$log.debug("add "+@suffix+" at pos "+@position.to_s)
                         if(@suffixes.has_key?(@suffixmd5))
                             # Add position
                             @suffixes[@suffixmd5] << @position
@@ -246,33 +253,43 @@ module Cassiopee
                             # Add position, write new suffix
                             # First elt is size of elt
                             @suffixes[@suffixmd5] = Array[i, @position]
-                            File.open(@file_suffix+FILE_SUFFIX_EXT, 'a') {|f| f.write(@suffixmd5+"\n"+@suffix+"\n") }
+                            nbSuffix += 1
                         end
                     end
                 end
+				$log.debug("Nb suffix found: " << nbSuffix)
+                
                 marshal_dump = Marshal.dump(@suffixes)
                 sfxpos = File.new(@file_suffix+FILE_SUFFIX_POS,'w')
                 sfxpos = Zlib::GzipWriter.new(sfxpos)
                 sfxpos.write marshal_dump
                 sfxpos.close
+                $log.info('End of indexing')
             end
           
           	# read input string, and concat content
           	
             def readSequence(s)
+            	$log.debug('read input sequence')
                  counter = 1
                  sequence = ''
                     begin
                         file = File.new(s, "r")
-                    	while (line = file.gets)
-                    		counter = counter + 1
-                            sequence << line.chomp
-                    	end
+                        File.delete(@file_suffix+FILE_SUFFIX_EXT) unless !File.exists?(@file_suffix+FILE_SUFFIX_EXT)
+						File.open(@file_suffix+FILE_SUFFIX_EXT, 'w') do |data|
+                    	  while (line = file.gets)
+                    			counter = counter + 1
+                            	input = line.downcase.chomp
+								sequence << input
+								data.puts input
+                    	  end
+					end
                     	file.close
                     rescue => err
                     	puts "Exception: #{err}"
                     	err
                     end
+                    $log.debug('data file created')
                     return sequence
              end
              
