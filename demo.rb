@@ -15,3 +15,7 @@ puts "Hamming: " << test.computeHamming("my strigg",1).to_s
 puts "LEVENSHTEIN: " << test.computeEdit("mystriigg",3).to_s
 
 crawler.searchApproximate("llu",1)
+
+while((match = crawler.next())!=nil)
+  puts "got a match " << match.inspect
+end

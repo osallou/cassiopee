@@ -4,14 +4,22 @@ require 'zlib'
 
 module Cassiopee
 
+	# Calculate the edit or hamming distance between String and pattern
+    # Extend a String
+    # Return -1 if max is reached
+    
     def computeDistance(pattern,hamming,edit)
       puts "compute distance with "<<hamming.to_s<<" and "<<edit.to_s
       if(edit==0)
-      	computeHamming(pattern,hamming)
+      	return computeHamming(pattern,hamming)
       else
-       computeEdit(pattern,edit)
+       return computeEdit(pattern,edit)
       end
     end
+    
+    # Calculate number of substitution between string and pattern
+    # Extend a String
+    # Return -1 if max is reached
     
     def computeHamming(pattern,hamming)
     	nberr = 0
@@ -25,6 +33,10 @@ module Cassiopee
     	end
     	return nberr
     end
+    
+    # Calculate the edit distance between string and pattern
+    # Extend a String
+    # Return -1 if max is reached
     
     def computeEdit(pattern,edit)
     	matrix= Array.new(2)
@@ -64,7 +76,9 @@ module Cassiopee
     	return matrix[p][pattern.length]
     	
     end
-    
+ 
+ 	# Base class to index and search through a string 
+ 
     class Crawler
  
     attr_accessor  :curpage, :resultPerPage, :useAmbiguity, :file_suffix
@@ -95,6 +109,8 @@ module Cassiopee
             $log.level = level
         end
         
+        # Index an input file
+        
         def indexFile(f)
          # Parse file, map letters to reduced alphabet
          # Later on, use binary map instead of ascii map
@@ -107,6 +123,8 @@ module Cassiopee
         def indexString(s)
             parseSuffixes(s)
         end
+        
+        # Search exact match
         
         def searchExact(s)
          @matches = Array.new
@@ -125,6 +143,11 @@ module Cassiopee
         return @matches 
         
         end
+        
+        # Search an approximate string
+        #
+        # * support insertion, deletion, substitution
+        
         
         def searchApproximate(s,edit)
         	if(edit==0) 
@@ -162,6 +185,8 @@ module Cassiopee
         	return @matches 
         end
         
+        # Extract un suffix from suffix file based on md5 match
+        
         def extractSuffix(md5val)
         	sequence = ''
                 begin
@@ -184,10 +209,11 @@ module Cassiopee
         end
         
         # Iterates over matches
+        
         def next
-        	if(curmatch<@matches.length)
+        	if(@curmatch<@matches.length)
         		@curmatch = @curmatch + 1
-        		return matches[@curmatch-1]
+        		return @matches[@curmatch-1]
         	else
         		@curmatch = 0
         		return nil
@@ -195,11 +221,16 @@ module Cassiopee
         end
         
         def to_s
-        
+        	puts '{ matches: "' << @matches.length << '" }'
         end
         
         private
         
+        	# Parse input string
+        	#
+        	# * creates a suffix file
+        	# * creates a suffix position file
+        	
             def parseSuffixes(s)
                 File.delete(@file_suffix+FILE_SUFFIX_EXT) unless !File.exists?(@file_suffix+FILE_SUFFIX_EXT)
                 File.delete(@file_suffix+FILE_SUFFIX_POS) unless !File.exists?(@file_suffix+FILE_SUFFIX_POS)
@@ -227,6 +258,8 @@ module Cassiopee
                 sfxpos.close
             end
           
+          	# read input string, and concat content
+          	
             def readSequence(s)
                  counter = 1
                  sequence = ''
@@ -244,7 +277,8 @@ module Cassiopee
                     return sequence
              end
              
-             
+            # Load suffix position file in memory 
+            
             def loadSuffixes(file_name)
                 begin
                   file = Zlib::GzipReader.open(file_name)
