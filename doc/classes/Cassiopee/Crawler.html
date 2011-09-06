@@ -92,15 +92,16 @@ Base class to index and search through a string
       <h3 class="section-bar">Methods</h3>
 
       <div class="name-list">
-      <a href="#M000010">extractSuffix</a>&nbsp;&nbsp;
-      <a href="#M000006">indexFile</a>&nbsp;&nbsp;
-      <a href="#M000007">indexString</a>&nbsp;&nbsp;
+      <a href="#M000005">clear</a>&nbsp;&nbsp;
+      <a href="#M000011">extractSuffix</a>&nbsp;&nbsp;
+      <a href="#M000007">indexFile</a>&nbsp;&nbsp;
+      <a href="#M000008">indexString</a>&nbsp;&nbsp;
       <a href="#M000004">new</a>&nbsp;&nbsp;
-      <a href="#M000011">next</a>&nbsp;&nbsp;
-      <a href="#M000009">searchApproximate</a>&nbsp;&nbsp;
-      <a href="#M000008">searchExact</a>&nbsp;&nbsp;
-      <a href="#M000005">setLogLevel</a>&nbsp;&nbsp;
-      <a href="#M000012">to_s</a>&nbsp;&nbsp;
+      <a href="#M000012">next</a>&nbsp;&nbsp;
+      <a href="#M000010">searchApproximate</a>&nbsp;&nbsp;
+      <a href="#M000009">searchExact</a>&nbsp;&nbsp;
+      <a href="#M000006">setLogLevel</a>&nbsp;&nbsp;
+      <a href="#M000013">to_s</a>&nbsp;&nbsp;
       </div>
     </div>
 
@@ -127,6 +128,11 @@ Base class to index and search through a string
           <td>=</td>
           <td class="context-item-value">&quot;.sfp&quot;</td>
         </tr>
+        <tr class="top-aligned-row context-row">
+          <td class="context-item-name">SUFFIXLEN</td>
+          <td>=</td>
+          <td class="context-item-value">'suffix_length'</td>
+        </tr>
         </table>
       </div>
     </div>
@@ -149,12 +155,22 @@ Base class to index and search through a string
           <td class="context-item-desc"></td>
         </tr>
         <tr class="top-aligned-row context-row">
+          <td class="context-item-name">maxthread</td>
+          <td class="context-item-value">&nbsp;[RW]&nbsp;</td>
+          <td class="context-item-desc"></td>
+        </tr>
+        <tr class="top-aligned-row context-row">
           <td class="context-item-name">resultPerPage</td>
           <td class="context-item-value">&nbsp;[RW]&nbsp;</td>
           <td class="context-item-desc"></td>
         </tr>
         <tr class="top-aligned-row context-row">
           <td class="context-item-name">useAmbiguity</td>
+          <td class="context-item-value">&nbsp;[RW]&nbsp;</td>
+          <td class="context-item-desc"></td>
+        </tr>
+        <tr class="top-aligned-row context-row">
+          <td class="context-item-name">use_store</td>
           <td class="context-item-value">&nbsp;[RW]&nbsp;</td>
           <td class="context-item-desc"></td>
         </tr>
@@ -184,13 +200,30 @@ Base class to index and search through a string
 
       <h3 class="section-bar">Public Instance methods</h3>
 
-      <div id="method-M000010" class="method-detail">
-        <a name="M000010"></a>
+      <div id="method-M000005" class="method-detail">
+        <a name="M000005"></a>
 
         <div class="method-heading">
-          <a href="Crawler.src/M000010.html" target="Code" class="method-signature"
-            onclick="popupCode('Crawler.src/M000010.html');return false;">
-          <span class="method-name">extractSuffix</span><span class="method-args">(md5val)</span>
+          <a href="Crawler.src/M000005.html" target="Code" class="method-signature"
+            onclick="popupCode('Crawler.src/M000005.html');return false;">
+          <span class="method-name">clear</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Clear suffixes in memory
+</p>
+        </div>
+      </div>
+
+      <div id="method-M000011" class="method-detail">
+        <a name="M000011"></a>
+
+        <div class="method-heading">
+          <a href="Crawler.src/M000011.html" target="Code" class="method-signature"
+            onclick="popupCode('Crawler.src/M000011.html');return false;">
+          <span class="method-name">extractSuffix</span><span class="method-args">(start,len)</span>
           </a>
         </div>
       
@@ -201,12 +234,12 @@ Extract un suffix from suffix file based on md5 match
         </div>
       </div>
 
-      <div id="method-M000006" class="method-detail">
-        <a name="M000006"></a>
+      <div id="method-M000007" class="method-detail">
+        <a name="M000007"></a>
 
         <div class="method-heading">
-          <a href="Crawler.src/M000006.html" target="Code" class="method-signature"
-            onclick="popupCode('Crawler.src/M000006.html');return false;">
+          <a href="Crawler.src/M000007.html" target="Code" class="method-signature"
+            onclick="popupCode('Crawler.src/M000007.html');return false;">
           <span class="method-name">indexFile</span><span class="method-args">(f)</span>
           </a>
         </div>
@@ -218,26 +251,29 @@ Index an input file
         </div>
       </div>
 
-      <div id="method-M000007" class="method-detail">
-        <a name="M000007"></a>
+      <div id="method-M000008" class="method-detail">
+        <a name="M000008"></a>
 
         <div class="method-heading">
-          <a href="Crawler.src/M000007.html" target="Code" class="method-signature"
-            onclick="popupCode('Crawler.src/M000007.html');return false;">
+          <a href="Crawler.src/M000008.html" target="Code" class="method-signature"
+            onclick="popupCode('Crawler.src/M000008.html');return false;">
           <span class="method-name">indexString</span><span class="method-args">(s)</span>
           </a>
         </div>
       
         <div class="method-description">
+          <p>
+Index an input string
+</p>
         </div>
       </div>
 
-      <div id="method-M000011" class="method-detail">
-        <a name="M000011"></a>
+      <div id="method-M000012" class="method-detail">
+        <a name="M000012"></a>
 
         <div class="method-heading">
-          <a href="Crawler.src/M000011.html" target="Code" class="method-signature"
-            onclick="popupCode('Crawler.src/M000011.html');return false;">
+          <a href="Crawler.src/M000012.html" target="Code" class="method-signature"
+            onclick="popupCode('Crawler.src/M000012.html');return false;">
           <span class="method-name">next</span><span class="method-args">()</span>
           </a>
         </div>
@@ -249,12 +285,12 @@ Iterates over matches
         </div>
       </div>
 
-      <div id="method-M000009" class="method-detail">
-        <a name="M000009"></a>
+      <div id="method-M000010" class="method-detail">
+        <a name="M000010"></a>
 
         <div class="method-heading">
-          <a href="Crawler.src/M000009.html" target="Code" class="method-signature"
-            onclick="popupCode('Crawler.src/M000009.html');return false;">
+          <a href="Crawler.src/M000010.html" target="Code" class="method-signature"
+            onclick="popupCode('Crawler.src/M000010.html');return false;">
           <span class="method-name">searchApproximate</span><span class="method-args">(s,edit)</span>
           </a>
         </div>
@@ -271,13 +307,13 @@ Search an approximate string
         </div>
       </div>
 
-      <div id="method-M000008" class="method-detail">
-        <a name="M000008"></a>
+      <div id="method-M000009" class="method-detail">
+        <a name="M000009"></a>
 
         <div class="method-heading">
-          <a href="Crawler.src/M000008.html" target="Code" class="method-signature"
-            onclick="popupCode('Crawler.src/M000008.html');return false;">
-          <span class="method-name">searchExact</span><span class="method-args">(s)</span>
+          <a href="Crawler.src/M000009.html" target="Code" class="method-signature"
+            onclick="popupCode('Crawler.src/M000009.html');return false;">
+          <span class="method-name">searchExact</span><span class="method-args">(pattern)</span>
           </a>
         </div>
       
@@ -288,26 +324,29 @@ Search exact match
         </div>
       </div>
 
-      <div id="method-M000005" class="method-detail">
-        <a name="M000005"></a>
+      <div id="method-M000006" class="method-detail">
+        <a name="M000006"></a>
 
         <div class="method-heading">
-          <a href="Crawler.src/M000005.html" target="Code" class="method-signature"
-            onclick="popupCode('Crawler.src/M000005.html');return false;">
+          <a href="Crawler.src/M000006.html" target="Code" class="method-signature"
+            onclick="popupCode('Crawler.src/M000006.html');return false;">
           <span class="method-name">setLogLevel</span><span class="method-args">(level)</span>
           </a>
         </div>
       
         <div class="method-description">
+          <p>
+Set Logger level
+</p>
         </div>
       </div>
 
-      <div id="method-M000012" class="method-detail">
-        <a name="M000012"></a>
+      <div id="method-M000013" class="method-detail">
+        <a name="M000013"></a>
 
         <div class="method-heading">
-          <a href="Crawler.src/M000012.html" target="Code" class="method-signature"
-            onclick="popupCode('Crawler.src/M000012.html');return false;">
+          <a href="Crawler.src/M000013.html" target="Code" class="method-signature"
+            onclick="popupCode('Crawler.src/M000013.html');return false;">
           <span class="method-name">to_s</span><span class="method-args">()</span>
           </a>
         </div>

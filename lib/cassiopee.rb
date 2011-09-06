@@ -12,7 +12,7 @@ module Cassiopee
       if(edit==0)
       	return computeHamming(pattern,hamming)
       else
-       return computeEdit(pattern,edit)
+       return computeLevenshtein(pattern,edit)
       end
     end
     
@@ -38,7 +38,7 @@ module Cassiopee
     # Extend a String
     # Return -1 if max is reached
     
-    def computeEdit(pattern,edit)
+    def computeLevenshtein(pattern,edit)
     	pattern = pattern.downcase
     	matrix= Array.new(2)
     	matrix[0] = Array.new(pattern.length+1)
@@ -82,10 +82,12 @@ module Cassiopee
  
     class Crawler
  
-    attr_accessor  :curpage, :resultPerPage, :useAmbiguity, :file_suffix, :maxthread
+    attr_accessor  :curpage, :resultPerPage, :useAmbiguity, :file_suffix, :maxthread, :use_store
     
     FILE_SUFFIX_EXT = ".sfx"
     FILE_SUFFIX_POS = ".sfp"
+    
+    SUFFIXLEN = 'suffix_length'
 
     $maxthread = 1
     
@@ -106,7 +108,18 @@ module Cassiopee
             
             @matches = nil
             @curmatch = 0
+            @use_store = false
+            
+            @sequence = nil
         end
+        
+        # Clear suffixes in memory
+        
+        def clear
+        	@suffixes = Hash.new
+        end
+    
+    	# Set Logger level
     
         def setLogLevel(level)
             $log.level = level
@@ -119,23 +132,32 @@ module Cassiopee
          # Later on, use binary map instead of ascii map
          # Take all suffix, order by length, link to position map on other file
          # Store md5 for easier compare? + 20 bytes per suffix
-            sequence2index = readSequence(f)
-            parseSuffixes(sequence2index)
+            @sequence = readSequence(f)
+            
         end
         
+        # Index an input string
+        
         def indexString(s)
-            parseSuffixes(s)
+            @sequence = s
+            File.open(@file_suffix+FILE_SUFFIX_EXT, 'w') do |data|
+            	data.puts(@sequence)
+            end
+            
+            
         end
         
         # Search exact match
         
-        def searchExact(s)
+        def searchExact(pattern)
+        pattern = pattern.downcase
+        parseSuffixes(@sequence,pattern.length,pattern.length)
+        
          @matches = Array.new
          # Search required length, compare (compare md5?)
          # MD5 = 128 bits, easier to compare for large strings
-            @suffixes = loadSuffixes(@file_suffix+FILE_SUFFIX_POS)
-            matchsize = s.length
-            matchmd5 = Digest::MD5.hexdigest(s)
+            matchsize = pattern.length
+            matchmd5 = Digest::MD5.hexdigest(pattern)
             @suffixes.each do |md5val,posArray|
                 if (md5val == matchmd5)
                     match = Array[md5val, 0, posArray]
@@ -156,8 +178,9 @@ module Cassiopee
         	if(edit==0) 
         		return searchExact(s)
         	end
+        	parseSuffixes(@sequence,s.length-edit,s.length+edit)
         
-        	@suffixes = loadSuffixes(@file_suffix+FILE_SUFFIX_POS)
+        	
             minmatchsize = s.length - edit
             maxmatchsize = s.length + edit
             matchmd5 = Digest::MD5.hexdigest(s)
@@ -165,6 +188,9 @@ module Cassiopee
         	@matches = Array.new
         	
         	@suffixes.each do |md5val,posArray|
+        		if(md5val == SUFFIXLEN)
+        			next
+        		end
         		if (md5val == matchmd5)
                     match = Array[md5val, 0, posArray]
 		    		$log.debug "Match: " << match.inspect
@@ -174,7 +200,7 @@ module Cassiopee
 		    			# Get string
 		    			seq = extractSuffix(posArray[1],posArray[0])
 		    			seq.extend(Cassiopee)
-		    			errors = seq.computeEdit(s,edit)
+		    			errors = seq.computeLevenshtein(s,edit)
 		    			if(errors>=0)
 		    			    match = Array[md5val, errors, posArray]
 		    				$log.debug "Match: " << match.inspect
@@ -194,17 +220,8 @@ module Cassiopee
         	sequence = ''
                 begin
                 	file = File.new(@file_suffix+FILE_SUFFIX_EXT, "r")
-		    	file.pos = start
-			sequence = file.read(len)
-                	#while (line = file.gets)
-			#	if(line.chomp == md5val)
-			#		line = file.gets
-                        #		sequence << line.chomp
-                        #		break
-                        #	else
-                        #		line = file.gets
-                        #	end
-                    	#end
+		    		file.pos = start
+					sequence = file.read(len)
                 	file.close
                 rescue => err
                 	puts "Exception: #{err}"
@@ -236,36 +253,96 @@ module Cassiopee
         	# * creates a suffix file
         	# * creates a suffix position file
         	
-            def parseSuffixes(s)
+            def parseSuffixes(s,minlen,maxlen)
+            
+            # Controls
+            if(minlen<=0) 
+            	minlen = 1
+            end
+            if(maxlen>@sequence.length)
+            	maxlen = @sequence.length
+            end
+            
+            
+            	suffixlen = nil
             	$log.info('Start indexing')
+            	loaded = false
+            	# Hash in memory already contain suffixes for searched lengths
+            	if(@suffixes != nil && !@suffixes.empty?)
+            		suffixlen = @suffixes[SUFFIXLEN]
+            		if(suffixlen!=nil && !suffixlen.empty?)
+            			loaded = true
+            			(maxlen).downto(minlen)  do |len|
+            				if(suffixlen.index(len)==nil)
+            					loaded = false
+            					break
+            				end
+            			end
+            		end
+            	end
+            	
+            	if(@use_store && loaded)
+            		$log.debug('already in memory, skip file loading')
+            	end
+            	
+            	# If not already in memory
+            	if(@use_store && !loaded)
+            		@suffixes = loadSuffixes(@file_suffix+FILE_SUFFIX_POS)
+            		suffixlen = @suffixes[SUFFIXLEN]
+            	end
+            	
             	nbSuffix = 0
-                File.delete(@file_suffix+FILE_SUFFIX_POS) unless !File.exists?(@file_suffix+FILE_SUFFIX_POS)
-                (s.length).downto(1)  do |i|
-                    (0..(s.length-i)).each do |j|
-                        @suffix = s[j,i]
-                        @suffixmd5 = Digest::MD5.hexdigest(@suffix)
-                        @position = j
-                        #$log.debug("add "+@suffix+" at pos "+@position.to_s)
-                        if(@suffixes.has_key?(@suffixmd5))
-                            # Add position
-                            @suffixes[@suffixmd5] << @position
-                        else
-                            # Add position, write new suffix
-                            # First elt is size of elt
-                            @suffixes[@suffixmd5] = Array[i, @position]
-                            nbSuffix += 1
-                        end
-                    end
-                end
-				$log.debug("Nb suffix found: " << nbSuffix)
+                changed = false
                 
-                marshal_dump = Marshal.dump(@suffixes)
-                sfxpos = File.new(@file_suffix+FILE_SUFFIX_POS,'w')
-                sfxpos = Zlib::GzipWriter.new(sfxpos)
-                sfxpos.write marshal_dump
-                sfxpos.close
+                # Load suffix between maxlen and minlen
+                (maxlen).downto(minlen)  do |i|
+                	$log.debug('parse for length ' << i.to_s)
+                	if(suffixlen!=nil && suffixlen.index(i)!=nil)
+                		$log.debug('length '<<i <<'already parsed')
+                		next
+                	end
+                	changed = true
+               		 (0..(s.length-maxlen)).each do |j|
+                    	@suffix = s[j,i]
+                    	@suffixmd5 = Digest::MD5.hexdigest(@suffix)
+                    	@position = j
+                    	#$log.debug("add "+@suffix+" at pos "+@position.to_s)
+                    	nbSuffix += addSuffix(@suffixmd5, @position,i)
+                    end
+                    $log.debug("Nb suffix found: " << nbSuffix.to_s << ' for length ' << i.to_s)
+                end
+            
+                
+                if(@use_store && changed)
+                	$log.info("Store suffixes")
+                	marshal_dump = Marshal.dump(@suffixes)
+                	sfxpos = File.new(@file_suffix+FILE_SUFFIX_POS,'w')
+                	sfxpos = Zlib::GzipWriter.new(sfxpos)
+                	sfxpos.write marshal_dump
+                	sfxpos.close
+                end
                 $log.info('End of indexing')
             end
+          
+          
+          	# Add a suffix in Hashmap
+          	
+          	def addSuffix(md5val,position,len)
+          		if(@suffixes.has_key?(md5val))
+                    # Add position
+                	@suffixes[md5val] << position
+    	        else
+                    # Add position, write new suffix
+                    # First elt is size of elt
+                	@suffixes[md5val] = Array[len, position]
+                	if(@suffixes.has_key?(SUFFIXLEN))
+                		@suffixes[SUFFIXLEN] << len
+                	else
+                		@suffixes[SUFFIXLEN] = Array[len]
+                	end
+                end
+          		return 1
+          	end
           
           	# read input string, and concat content
           	
@@ -283,7 +360,8 @@ module Cassiopee
 								sequence << input
 								data.puts input
                     	  end
-					end
+                    	
+						end
                     	file.close
                     rescue => err
                     	puts "Exception: #{err}"
@@ -296,6 +374,7 @@ module Cassiopee
             # Load suffix position file in memory 
             
             def loadSuffixes(file_name)
+            	return Hash.new unless File.exists?(@file_suffix+FILE_SUFFIX_POS)
                 begin
                   file = Zlib::GzipReader.open(file_name)
                 rescue Zlib::GzipFile::Error

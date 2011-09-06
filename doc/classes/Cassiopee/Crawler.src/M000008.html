@@ -5,28 +5,19 @@
 
 <html>
 <head>
-  <title>searchExact (Cassiopee::Crawler)</title>
+  <title>indexString (Cassiopee::Crawler)</title>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
 </head>
 <body class="standalone-code">
-  <pre><span class="ruby-comment cmt"># File lib/cassiopee.rb, line 129</span>
-        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">searchExact</span>(<span class="ruby-identifier">s</span>)
-         <span class="ruby-ivar">@matches</span> = <span class="ruby-constant">Array</span>.<span class="ruby-identifier">new</span>
-         <span class="ruby-comment cmt"># Search required length, compare (compare md5?)</span>
-         <span class="ruby-comment cmt"># MD5 = 128 bits, easier to compare for large strings</span>
-            <span class="ruby-ivar">@suffixes</span> = <span class="ruby-identifier">loadSuffixes</span>(<span class="ruby-ivar">@file_suffix</span><span class="ruby-operator">+</span><span class="ruby-constant">FILE_SUFFIX_POS</span>)
-            <span class="ruby-identifier">matchsize</span> = <span class="ruby-identifier">s</span>.<span class="ruby-identifier">length</span>
-            <span class="ruby-identifier">matchmd5</span> = <span class="ruby-constant">Digest</span><span class="ruby-operator">::</span><span class="ruby-constant">MD5</span>.<span class="ruby-identifier">hexdigest</span>(<span class="ruby-identifier">s</span>)
-            <span class="ruby-ivar">@suffixes</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">md5val</span>,<span class="ruby-identifier">posArray</span><span class="ruby-operator">|</span>
-                <span class="ruby-keyword kw">if</span> (<span class="ruby-identifier">md5val</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">matchmd5</span>)
-                    <span class="ruby-identifier">match</span> = <span class="ruby-constant">Array</span>[<span class="ruby-identifier">md5val</span>, <span class="ruby-value">0</span>, <span class="ruby-identifier">posArray</span>]
-                              <span class="ruby-identifier">$log</span>.<span class="ruby-identifier">debug</span> <span class="ruby-value str">&quot;Match: &quot;</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">match</span>.<span class="ruby-identifier">inspect</span>
-                              <span class="ruby-ivar">@matches</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">match</span>
-                <span class="ruby-keyword kw">end</span>
+  <pre><span class="ruby-comment cmt"># File lib/cassiopee.rb, line 141</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">indexString</span>(<span class="ruby-identifier">s</span>)
+            <span class="ruby-ivar">@sequence</span> = <span class="ruby-identifier">s</span>
+            <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-ivar">@file_suffix</span><span class="ruby-operator">+</span><span class="ruby-constant">FILE_SUFFIX_EXT</span>, <span class="ruby-value str">'w'</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">data</span><span class="ruby-operator">|</span>
+                <span class="ruby-identifier">data</span>.<span class="ruby-identifier">puts</span>(<span class="ruby-ivar">@sequence</span>)
             <span class="ruby-keyword kw">end</span>
-        <span class="ruby-keyword kw">return</span> <span class="ruby-ivar">@matches</span> 
-        
+            
+            
         <span class="ruby-keyword kw">end</span></pre>
 </body>
 </html>
