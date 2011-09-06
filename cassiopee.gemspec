@@ -11,4 +11,5 @@ Gem::Specification.new do |s|
   s.has_rdoc = true
   s.rdoc_options << '--main lib/cassiopee.rb'
   s.license = 'LGPL-3'
+  s.test_file = 'tests/test-suite.rb'
 end
