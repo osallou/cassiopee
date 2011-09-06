@@ -177,6 +177,8 @@ module Cassiopee
         # Search an approximate string
         #
         # * support insertion, deletion, substitution
+        # * If edit > 0, use Hamming
+        # * Else use Levenshtein
         
         
         def searchApproximate(s,edit)
@@ -185,9 +187,14 @@ module Cassiopee
         	end
         	parseSuffixes(@sequence,s.length-edit,s.length+edit)
         
-        	
-            minmatchsize = s.length - edit
-            maxmatchsize = s.length + edit
+        	if(edit>0)
+        	  minmatchsize = s.length
+        	  maxmatchsize = s.length
+        	else
+              minmatchsize = s.length - edit
+              maxmatchsize = s.length + edit
+            end
+            
             matchmd5 = Digest::MD5.hexdigest(s)
             
         	@matches = Array.new
@@ -205,7 +212,11 @@ module Cassiopee
 		    			# Get string
 		    			seq = extractSuffix(posArray[1],posArray[0])
 		    			seq.extend(Cassiopee)
-		    			errors = seq.computeLevenshtein(s,edit)
+		    			if(edit>0)
+		    			  errors = seq.computeHamming(s,edit)
+		    			else
+		    			  errors = seq.computeLevenshtein(s,(edit * -1))
+		    			end
 		    			if(errors>=0)
 		    			    match = Array[md5val, errors, posArray]
 		    				$log.debug "Match: " << match.inspect

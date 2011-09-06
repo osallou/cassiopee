@@ -23,7 +23,7 @@ puts "Hamming: " << test.computeHamming("my strigg",1).to_s
 puts "Levenshtein: " << test.computeLevenshtein("mystriigg",3).to_s
 
 # Approcimate search, edit distance = 1
-crawler.searchApproximate("llu",1)
+crawler.searchApproximate("llu",-1)
 
 # Go through matches
 while((match = crawler.next())!=nil)
