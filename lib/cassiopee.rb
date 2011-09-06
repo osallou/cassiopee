@@ -185,15 +185,19 @@ module Cassiopee
         	if(edit==0) 
         		return searchExact(s)
         	end
-        	parseSuffixes(@sequence,s.length-edit,s.length+edit)
         
         	if(edit>0)
+        	  useHamming = true
         	  minmatchsize = s.length
         	  maxmatchsize = s.length
         	else
+        	  useHamming = false
+        	  edit = edit * (-1)
               minmatchsize = s.length - edit
               maxmatchsize = s.length + edit
             end
+            
+            parseSuffixes(@sequence,minmatchsize,maxmatchsize)
             
             matchmd5 = Digest::MD5.hexdigest(s)
             
@@ -212,10 +216,10 @@ module Cassiopee
 		    			# Get string
 		    			seq = extractSuffix(posArray[1],posArray[0])
 		    			seq.extend(Cassiopee)
-		    			if(edit>0)
+		    			if(useHamming)
 		    			  errors = seq.computeHamming(s,edit)
 		    			else
-		    			  errors = seq.computeLevenshtein(s,(edit * -1))
+		    			  errors = seq.computeLevenshtein(s,edit)
 		    			end
 		    			if(errors>=0)
 		    			    match = Array[md5val, errors, posArray]

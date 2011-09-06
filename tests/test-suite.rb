@@ -20,9 +20,15 @@ class TestCrawler < Test::Unit::TestCase
 
   def test_hammingsearch
     crawler = Cassiopee::Crawler.new
-    crawler.setLogLevel(Logger::DEBUG)
     crawler.indexString('my sample example')
     matches = crawler.searchApproximate('ebampl',1)
+    assert_equal(1,matches.length)
+  end
+
+  def test_levenshteinsearch
+    crawler = Cassiopee::Crawler.new
+    crawler.indexString('my sample example')
+    matches = crawler.searchApproximate('ebampl',-1)
     assert_equal(1,matches.length)
   end
 
