@@ -82,7 +82,14 @@ module Cassiopee
  
     class Crawler
  
-    attr_accessor  :curpage, :resultPerPage, :useAmbiguity, :file_suffix, :maxthread, :use_store
+ 	# Use alphabet ambiguity (dna/rna) in search
+    attr_accessor  :useAmbiguity
+    # Suffix files name/path
+    attr_accessor  :file_suffix
+    # Max number fo threads to use (not yet used)
+    attr_accessor  :maxthread
+    # Use persistent suffix file ?
+    attr_accessor  :use_store
     
     FILE_SUFFIX_EXT = ".sfx"
     FILE_SUFFIX_POS = ".sfp"
@@ -95,8 +102,6 @@ module Cassiopee
     $log.level = Logger::DEBUG
     
         def initialize
-            @curpage = 0
-            @resultPerPage = 100
             @useAmbiguity = false
             @file_suffix = "crawler"
             
