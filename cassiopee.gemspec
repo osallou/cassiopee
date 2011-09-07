@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = %q{cassiopee}
-  s.version = "0.1.0"
+  s.version = "0.1.1"
   s.date = %q{2011-09-04}
   s.authors = ["Olivier Sallou"]
   s.email = %q{olivier.sallou@gmail.com}
@@ -12,4 +12,6 @@ Gem::Specification.new do |s|
   s.rdoc_options << '--main lib/cassiopee.rb'
   s.license = 'LGPL-3'
   s.test_file = 'tests/test-suite.rb'
+  s.add_dependency('text', '>= 0.2.0')
+  s.add_dependency('rubygems')
 end
