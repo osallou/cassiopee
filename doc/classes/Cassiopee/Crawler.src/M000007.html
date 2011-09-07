@@ -5,19 +5,27 @@
 
 <html>
 <head>
-  <title>indexFile (Cassiopee::Crawler)</title>
+  <title>new (Cassiopee::Crawler)</title>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
 </head>
 <body class="standalone-code">
-  <pre><span class="ruby-comment cmt"># File lib/cassiopee.rb, line 135</span>
-        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">indexFile</span>(<span class="ruby-identifier">f</span>)
-         <span class="ruby-comment cmt"># Parse file, map letters to reduced alphabet</span>
-         <span class="ruby-comment cmt"># Later on, use binary map instead of ascii map</span>
-         <span class="ruby-comment cmt"># Take all suffix, order by length, link to position map on other file</span>
-         <span class="ruby-comment cmt"># Store md5 for easier compare? + 20 bytes per suffix</span>
-            <span class="ruby-ivar">@sequence</span> = <span class="ruby-identifier">readSequence</span>(<span class="ruby-identifier">f</span>)
+  <pre><span class="ruby-comment cmt"># File lib/cassiopee.rb, line 83</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>
+            <span class="ruby-ivar">@useAmbiguity</span> = <span class="ruby-keyword kw">false</span>
+            <span class="ruby-ivar">@file_suffix</span> = <span class="ruby-value str">&quot;crawler&quot;</span>
             
+            <span class="ruby-ivar">@suffix</span> = <span class="ruby-keyword kw">nil</span>
+            <span class="ruby-ivar">@suffixmd5</span> = <span class="ruby-keyword kw">nil</span>
+            <span class="ruby-ivar">@position</span> = <span class="ruby-value">0</span>
+            
+            <span class="ruby-ivar">@suffixes</span> = <span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span>
+            
+            <span class="ruby-ivar">@matches</span> = <span class="ruby-keyword kw">nil</span>
+            <span class="ruby-ivar">@curmatch</span> = <span class="ruby-value">0</span>
+            <span class="ruby-ivar">@use_store</span> = <span class="ruby-keyword kw">false</span>
+            
+            <span class="ruby-ivar">@sequence</span> = <span class="ruby-keyword kw">nil</span>
         <span class="ruby-keyword kw">end</span></pre>
 </body>
 </html>

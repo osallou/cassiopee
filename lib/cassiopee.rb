@@ -67,6 +67,9 @@ module Cassiopee
     # Use persistent suffix file ?
     attr_accessor  :use_store
     
+    @min_position = 0
+    @max_position = 0
+    
     FILE_SUFFIX_EXT = ".sfx"
     FILE_SUFFIX_POS = ".sfp"
     
@@ -95,9 +98,11 @@ module Cassiopee
         end
         
         # Clear suffixes in memory
+        # If using use_store, clear the store too
         
         def clear
         	@suffixes = Hash.new
+        	File.delete(@file_suffix+FILE_SUFFIX_POS) unless !File.exists?(@file_suffix+FILE_SUFFIX_POS)
         end
     
     	# Set Logger level
@@ -107,6 +112,7 @@ module Cassiopee
         end
         
         # Index an input file
+        # Clear existing indexes
         
         def indexFile(f)
          # Parse file, map letters to reduced alphabet
@@ -114,18 +120,34 @@ module Cassiopee
          # Take all suffix, order by length, link to position map on other file
          # Store md5 for easier compare? + 20 bytes per suffix
             @sequence = readSequence(f)
-            
+            clear()
+            @min_position = 0
+    		@max_position = 0
         end
         
         # Index an input string
+        # Clear existing indexes
         
         def indexString(s)
             @sequence = s
             File.open(@file_suffix+FILE_SUFFIX_EXT, 'w') do |data|
             	data.puts(@sequence)
             end
-            
-            
+            clear()
+            @min_position = 0
+    		@max_position = 0
+        end
+        
+        # Filter matches to be between min and max start position
+        # If not using use_store, search speed is improved but existing indexes are cleared
+        # If max=0, then max is string length
+        
+        def filter_position(min,max)
+            if(!use_store)
+        		clear()
+        	end
+        	@min_position = min
+        	@max_position = max
         end
         
         # Search exact match
@@ -184,7 +206,8 @@ module Cassiopee
         			next
         		end
         		if (md5val == matchmd5)
-                    match = Array[md5val, 0, posArray]
+        			filteredPosArray = filter(posArray)
+                    match = Array[md5val, 0, filteredPosArray]
 		    		$log.debug "Match: " << match.inspect
 		    		@matches << match
 		    	else
@@ -198,7 +221,8 @@ module Cassiopee
 		    			  errors = seq.computeLevenshtein(s,edit)
 		    			end
 		    			if(errors>=0)
-		    			    match = Array[md5val, errors, posArray]
+		    				filteredPosArray = filter(posArray)
+		    			    match = Array[md5val, errors, filteredPosArray]
 		    				$log.debug "Match: " << match.inspect
 		    				@matches << match
 		    			end
@@ -209,6 +233,29 @@ module Cassiopee
         	
         	return @matches 
         end
+        
+        # Filter the array of positions with defined position filter
+        
+        def filter(posArray)
+        	$log.debug("filter the position with " << @min_position.to_s << " and " << @max_position.to_s)
+        	if(@min_position==0 && @max_position==0)
+        		return posArray
+        	end
+        	filteredArray = Array.new
+        	i = 0
+        	posArray.each do |pos|
+        		if(i==0)
+        			# First elt of array is match length
+        			filteredArray << pos
+        		end
+        		if(i>0 && pos>=@min_position && pos<=@max_position)
+        			filteredArray << pos
+        		end
+        		i +=1
+        	end
+        	return filteredArray
+        end
+        
         
         # Extract un suffix from suffix file based on md5 match
         
@@ -259,6 +306,17 @@ module Cassiopee
             	maxlen = @sequence.length
             end
             
+            if(!use_store)
+            	minpos = @min_position
+            	if(@max_position==0)
+            		maxpos = @sequence.length
+            	else
+            		maxpos = @max_position
+            	end
+            else
+            	minpos = 0
+            	maxpos = @sequence.length - minlen
+            end
             
             	suffixlen = nil
             	$log.info('Start indexing')
@@ -298,11 +356,15 @@ module Cassiopee
                 		next
                 	end
                 	changed = true
-               		 (0..(s.length-maxlen)).each do |j|
+               		 (minpos..(maxpos)).each do |j|
+               		 	# if position+length longer than sequence length, skip it
+               		 	if(j+i>=@sequence.length)
+               		 		next
+               		 	end
                     	@suffix = s[j,i]
                     	@suffixmd5 = Digest::MD5.hexdigest(@suffix)
                     	@position = j
-                    	#$log.debug("add "+@suffix+" at pos "+@position.to_s)
+                    	$log.debug("add "+@suffix+" at pos "+@position.to_s)
                     	nbSuffix += addSuffix(@suffixmd5, @position,i)
                     end
                     $log.debug("Nb suffix found: " << nbSuffix.to_s << ' for length ' << i.to_s)
