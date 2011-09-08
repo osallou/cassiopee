@@ -13,5 +13,4 @@ Gem::Specification.new do |s|
   s.license = 'LGPL-3'
   s.test_file = 'tests/test-suite.rb'
   s.add_dependency('text', '>= 0.2.0')
-  s.add_dependency('rubygems')
 end
