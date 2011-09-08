@@ -58,7 +58,7 @@ module Cassiopee
  
     class Crawler
  
- 	# Use alphabet ambiguity (dna/rna) in search
+ 	# Use alphabet ambiguity (dna/rna) in search (not yet used)
     attr_accessor  :useAmbiguity
     # Suffix files name/path
     attr_accessor  :file_suffix
@@ -66,6 +66,8 @@ module Cassiopee
     attr_accessor  :maxthread
     # Use persistent suffix file ?
     attr_accessor  :use_store
+	# Array of comment characters to skip lines in input sequence file
+	attr_accessor  :comments
     
     @min_position = 0
     @max_position = 0
@@ -76,6 +78,7 @@ module Cassiopee
     SUFFIXLEN = 'suffix_length'
 
     $maxthread = 1
+	
     
     $log = Logger.new(STDOUT)
     $log.level = Logger::DEBUG
@@ -95,6 +98,8 @@ module Cassiopee
             @use_store = false
             
             @sequence = nil
+			
+			@comments = Array["#"]
         end
         
         # Clear suffixes in memory
@@ -137,6 +142,24 @@ module Cassiopee
             @min_position = 0
     		@max_position = 0
         end
+		
+		# Load sequence from a previous index command
+		
+		def loadIndex
+			seq = ''
+			begin
+				file = File.new(@file_suffix+FILE_SUFFIX_EXT, "r")
+				while (line = file.gets)
+					input = line.downcase.chomp
+					seq << input
+				end
+				file.close
+			rescue => err
+				$log.error("Exception: #{err}")
+				exit()
+			end
+			@sequence = seq
+		end
         
         # Filter matches to be between min and max start position
         # If not using use_store, search speed is improved but existing indexes are cleared
@@ -415,8 +438,17 @@ module Cassiopee
                     	  while (line = file.gets)
                     			counter = counter + 1
                             	input = line.downcase.chomp
+								skip = false
+								comments.each do |c|
+									if(input[0] == c)
+										# Line start with a comment char, skip it
+										skip = true
+									end
+								end
+								if(!skip)
 								sequence << input
 								data.puts input
+								end
                     	  end
                     	
 						end
