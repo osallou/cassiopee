@@ -159,6 +159,9 @@ module Cassiopee
 				exit()
 			end
 			@sequence = seq
+			clear()
+            @min_position = 0
+    		@max_position = 0
 		end
         
         # Filter matches to be between min and max start position
@@ -440,14 +443,17 @@ module Cassiopee
                             	input = line.downcase.chomp
 								skip = false
 								comments.each do |c|
-									if(input[0] == c)
+								$log.debug("skip line ?" << c << " == " << input[0])
+									if(input[0] == c[0])
 										# Line start with a comment char, skip it
+										$log.debug("skip line")
 										skip = true
+										break
 									end
 								end
 								if(!skip)
-								sequence << input
-								data.puts input
+									sequence << input
+									data.puts input
 								end
                     	  end
                     	
