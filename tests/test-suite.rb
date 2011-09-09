@@ -17,6 +17,14 @@ class TestCrawler < Test::Unit::TestCase
     assert_equal(2,match[2].length-1)
   end
 
+  def test_ambiguous 
+    crawler = Cassiopee::Crawler.new
+    crawler.loadAmbiguityFile(File.join(File.dirname(__FILE__), 'amb.map'))
+    crawler.indexString('aaaaaaaaaaacgttttttt')
+    matches = crawler.searchExact('aucgt')
+    assert_equal(1,matches.length)
+  end
+
 
   def test_hammingsearch
     crawler = Cassiopee::Crawler.new

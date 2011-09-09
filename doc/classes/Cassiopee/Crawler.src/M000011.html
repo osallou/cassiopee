@@ -5,14 +5,21 @@
 
 <html>
 <head>
-  <title>setLogLevel (Cassiopee::Crawler)</title>
+  <title>indexFile (Cassiopee::Crawler)</title>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
 </head>
 <body class="standalone-code">
-  <pre><span class="ruby-comment cmt"># File lib/cassiopee.rb, line 123</span>
-        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">setLogLevel</span>(<span class="ruby-identifier">level</span>)
-            <span class="ruby-identifier">$log</span>.<span class="ruby-identifier">level</span> = <span class="ruby-identifier">level</span>
+  <pre><span class="ruby-comment cmt"># File lib/cassiopee.rb, line 229</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">indexFile</span>(<span class="ruby-identifier">f</span>)
+         <span class="ruby-comment cmt"># Parse file, map letters to reduced alphabet</span>
+         <span class="ruby-comment cmt"># Later on, use binary map instead of ascii map</span>
+         <span class="ruby-comment cmt"># Take all suffix, order by length, link to position map on other file</span>
+         <span class="ruby-comment cmt"># Store md5 for easier compare? + 20 bytes per suffix</span>
+            <span class="ruby-ivar">@sequence</span> = <span class="ruby-identifier">readSequence</span>(<span class="ruby-identifier">f</span>)
+            <span class="ruby-identifier">clear</span>()
+            <span class="ruby-ivar">@min_position</span> = <span class="ruby-value">0</span>
+                <span class="ruby-ivar">@max_position</span> = <span class="ruby-value">0</span>
         <span class="ruby-keyword kw">end</span></pre>
 </body>
 </html>

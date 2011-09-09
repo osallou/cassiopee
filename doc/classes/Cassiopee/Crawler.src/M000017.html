@@ -10,13 +10,13 @@
   <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
 </head>
 <body class="standalone-code">
-  <pre><span class="ruby-comment cmt"># File lib/cassiopee.rb, line 216</span>
+  <pre><span class="ruby-comment cmt"># File lib/cassiopee.rb, line 344</span>
         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">searchApproximate</span>(<span class="ruby-identifier">s</span>,<span class="ruby-identifier">edit</span>)
-                <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">edit</span><span class="ruby-operator">==</span><span class="ruby-value">0</span>) 
+                <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">edit</span><span class="ruby-operator">==</span><span class="ruby-value">0</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-ivar">@useAmbiguity</span>) 
                         <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">searchExact</span>(<span class="ruby-identifier">s</span>)
                 <span class="ruby-keyword kw">end</span>
         
-                <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">edit</span><span class="ruby-operator">&gt;</span><span class="ruby-value">0</span>)
+                <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">edit</span><span class="ruby-operator">&gt;=</span><span class="ruby-value">0</span>)
                   <span class="ruby-identifier">useHamming</span> = <span class="ruby-keyword kw">true</span>
                   <span class="ruby-identifier">minmatchsize</span> = <span class="ruby-identifier">s</span>.<span class="ruby-identifier">length</span>
                   <span class="ruby-identifier">maxmatchsize</span> = <span class="ruby-identifier">s</span>.<span class="ruby-identifier">length</span>
@@ -48,9 +48,17 @@
                                       <span class="ruby-identifier">seq</span> = <span class="ruby-identifier">extractSuffix</span>(<span class="ruby-identifier">posArray</span>[<span class="ruby-value">1</span>],<span class="ruby-identifier">posArray</span>[<span class="ruby-value">0</span>])
                                       <span class="ruby-identifier">seq</span>.<span class="ruby-identifier">extend</span>(<span class="ruby-constant">Cassiopee</span>)
                                       <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">useHamming</span>)
-                                        <span class="ruby-identifier">errors</span> = <span class="ruby-identifier">seq</span>.<span class="ruby-identifier">computeHamming</span>(<span class="ruby-identifier">s</span>,<span class="ruby-identifier">edit</span>)
+                                                  <span class="ruby-keyword kw">if</span>(<span class="ruby-ivar">@useAmbiguity</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-ivar">@ambiguous!</span>=<span class="ruby-keyword kw">nil</span>)
+                                                    <span class="ruby-identifier">errors</span> = <span class="ruby-identifier">seq</span>.<span class="ruby-identifier">computeHammingAmbiguous</span>(<span class="ruby-identifier">s</span>,<span class="ruby-identifier">edit</span>,<span class="ruby-ivar">@ambiguous</span>)
+                                                  <span class="ruby-keyword kw">else</span>
+                                          <span class="ruby-identifier">errors</span> = <span class="ruby-identifier">seq</span>.<span class="ruby-identifier">computeHamming</span>(<span class="ruby-identifier">s</span>,<span class="ruby-identifier">edit</span>)
+                                                  <span class="ruby-keyword kw">end</span>
                                       <span class="ruby-keyword kw">else</span>
-                                        <span class="ruby-identifier">errors</span> = <span class="ruby-identifier">seq</span>.<span class="ruby-identifier">computeLevenshtein</span>(<span class="ruby-identifier">s</span>,<span class="ruby-identifier">edit</span>)
+                                                  <span class="ruby-keyword kw">if</span>(<span class="ruby-ivar">@useAmbiguity</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-ivar">@ambigous!</span>=<span class="ruby-keyword kw">nil</span>)
+                                                    <span class="ruby-identifier">errors</span> = <span class="ruby-identifier">seq</span>.<span class="ruby-identifier">computeLevenshteinAmbiguous</span>(<span class="ruby-identifier">s</span>,<span class="ruby-identifier">edit</span>,<span class="ruby-ivar">@ambigous</span>)
+                                                  <span class="ruby-keyword kw">else</span>
+                                          <span class="ruby-identifier">errors</span> = <span class="ruby-identifier">seq</span>.<span class="ruby-identifier">computeLevenshtein</span>(<span class="ruby-identifier">s</span>,<span class="ruby-identifier">edit</span>)
+                                                  <span class="ruby-keyword kw">end</span>                                             
                                       <span class="ruby-keyword kw">end</span>
                                       <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">errors</span><span class="ruby-operator">&gt;=</span><span class="ruby-value">0</span>)
                                               <span class="ruby-identifier">filteredPosArray</span> = <span class="ruby-identifier">filter</span>(<span class="ruby-identifier">posArray</span>)

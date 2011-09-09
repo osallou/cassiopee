@@ -5,16 +5,16 @@
 
 <html>
 <head>
-  <title>test_hammingsearch (TestCrawler)</title>
+  <title>test_levenshteinsearch (TestCrawler)</title>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
 </head>
 <body class="standalone-code">
-  <pre><span class="ruby-comment cmt"># File tests/test-suite.rb, line 29</span>
-  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">test_hammingsearch</span>
+  <pre><span class="ruby-comment cmt"># File tests/test-suite.rb, line 36</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">test_levenshteinsearch</span>
     <span class="ruby-identifier">crawler</span> = <span class="ruby-constant">Cassiopee</span><span class="ruby-operator">::</span><span class="ruby-constant">Crawler</span>.<span class="ruby-identifier">new</span>
     <span class="ruby-identifier">crawler</span>.<span class="ruby-identifier">indexString</span>(<span class="ruby-value str">'my sample example'</span>)
-    <span class="ruby-identifier">matches</span> = <span class="ruby-identifier">crawler</span>.<span class="ruby-identifier">searchApproximate</span>(<span class="ruby-value str">'ebampl'</span>,<span class="ruby-value">1</span>)
+    <span class="ruby-identifier">matches</span> = <span class="ruby-identifier">crawler</span>.<span class="ruby-identifier">searchApproximate</span>(<span class="ruby-value str">'ebampl'</span>,<span class="ruby-value">-1</span>)
     <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value">1</span>,<span class="ruby-identifier">matches</span>.<span class="ruby-identifier">length</span>)
   <span class="ruby-keyword kw">end</span></pre>
 </body>

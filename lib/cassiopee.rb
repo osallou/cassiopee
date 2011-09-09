@@ -3,6 +3,7 @@ require 'logger'
 require 'zlib'
 require 'rubygems'
 require 'text'
+require 'text/util'
 
 module Cassiopee
 
@@ -17,8 +18,36 @@ module Cassiopee
        return computeLevenshtein(pattern,edit)
       end
     end
+	
+	# Calculate the edit or hamming distance between String and pattern
+    # Extend a String
+    # Return -1 if max is reached
     
-    # Calculate number of substitution between string and pattern
+    def computeAmbiguousDistance(pattern,hamming,edit,ambiguous)
+      if(edit==0)
+      	return computeHammingAmbiguous(pattern,hamming,ambiguous)
+      else
+       return computeLevenshteinAmbiguous(pattern,edit,ambiguous)
+      end
+    end
+    
+    # Compute Hamming distance but using a mapping matrix of alphabet ambiguity
+    
+    def computeHammingAmbiguous(pattern,hamming,ambiguous)
+    	pattern = pattern.downcase
+    	nberr = 0
+    	(0..(self.length-1)).each do |c|
+    		if(!isAmbiguousEqual(pattern[c],self[c],ambiguous))
+    			nberr = nberr+1
+    			if(nberr>hamming.to_i)
+    				return -1		
+    			end
+    		end
+    	end
+    	return nberr
+    end
+
+     # Calculate number of substitution between string and pattern
     # Extend a String
     # Return -1 if max is reached
     
@@ -35,8 +64,9 @@ module Cassiopee
     	end
     	return nberr
     end
-
-    
+	
+	   
+		     
     # Calculate the edit distance between string and pattern
     # Extend a String
     # Return -1 if max is reached
@@ -53,12 +83,79 @@ module Cassiopee
     	return distance
     	
     end
+	
+	private
+	
+	# Compute Levenshtein distance but using a mapping matrix of alphabet ambiguity
+	# Code comes from Text gem, Text::Levenshtein.distance, adapted for ambiguity comparison
+	
+    def computeLevenshteinAmbiguous(pattern, edit, ambiguous)
+	
+	  pattern = pattern.downcase
+      encoding = defined?(Encoding) ? self.encoding.to_s : $KCODE
+
+    if Text.encoding_of(self) =~ /^U/i
+      unpack_rule = 'U*'
+    else
+      unpack_rule = 'C*'
+    end
+
+    s = self.unpack(unpack_rule)
+    t = pattern.unpack(unpack_rule)
+    n = s.length
+    m = t.length
+    return m if (0 == n)
+    return n if (0 == m)
+
+    d = (0..m).to_a
+    x = nil
+
+    (0...n).each do |i|
+      e = i+1
+      (0...m).each do |j|
+        cost = (isAmbiguousEqual(s[i],t[j],ambiguous)) ? 0 : 1
+        x = [
+          d[j+1] + 1, # insertion
+          e + 1,      # deletion
+          d[j] + cost # substitution
+        ].min
+        d[j] = e
+        e = x
+      end
+      d[m] = x
+    end
+    if(x>edit)
+    return -1
+	end
+	
+	return x
+  end
+  
+  
+  # checks if 2 chars are equal with ambiguity rules
+  # * ambigous is a Hash of char/Array of char mapping
+  
+  def isAmbiguousEqual(a,b,ambiguous)
+	if(ambiguous==nil || ambiguous[a.chr]==nil)
+	  if(a==b)
+	    return true
+	  else
+	    return false
+	  end
+	end
+	vin = "" << a.chr
+	if(ambiguous[a.chr].index(b.chr)!=nil)
+	   return true
+    else
+	   return false
+	end
+  end
  
  	# Base class to index and search through a string 
  
     class Crawler
  
- 	# Use alphabet ambiguity (dna/rna) in search (not yet used)
+ 	# Use alphabet ambiguity (dna/rna) in search, automatically set with loadAmbiguityFile
     attr_accessor  :useAmbiguity
     # Suffix files name/path
     attr_accessor  :file_suffix
@@ -71,6 +168,8 @@ module Cassiopee
     
     @min_position = 0
     @max_position = 0
+	
+	@ambiguous = nil
     
     FILE_SUFFIX_EXT = ".sfx"
     FILE_SUFFIX_POS = ".sfp"
@@ -81,7 +180,7 @@ module Cassiopee
 	
     
     $log = Logger.new(STDOUT)
-    $log.level = Logger::DEBUG
+    $log.level = Logger::INFO
     
         def initialize
             @useAmbiguity = false
@@ -151,6 +250,32 @@ module Cassiopee
     		@max_position = 0
         end
 		
+		
+		# Load ambiguity rules from a file
+		# File format should be:
+		# * A=B,C
+		#   D=E,F
+		#   ...
+		
+		def loadAmbiguityFile(f)
+		  if(!File.exists?(f))
+		     $log.error("File "<< f << "does not exists")
+			 exit(1)
+		  end
+		  @ambiguous = Hash.new
+		  file = File.new(f, "r")
+		  while (line = file.gets)
+		    definition = line.downcase.chomp
+			ambdef = definition.split('=')
+			ambequal = ambdef[1].split(',')
+			@ambiguous[ambdef[0]] = ambequal
+		  end
+		  @useAmbiguity = true
+		  $log.debug("loaded ambiguity rules: " << @ambiguous.inspect())
+		  file.close
+		
+		end
+		
 		# Load sequence from a previous index command
 		
 		def loadIndex
@@ -187,6 +312,9 @@ module Cassiopee
         # Search exact match
         
         def searchExact(pattern)
+		if(@useAmbiguity)
+		  return searchApproximate(pattern,0)
+		end
         pattern = pattern.downcase
         parseSuffixes(@sequence,pattern.length,pattern.length)
         
@@ -214,11 +342,11 @@ module Cassiopee
         
         
         def searchApproximate(s,edit)
-        	if(edit==0) 
+        	if(edit==0 && !@useAmbiguity) 
         		return searchExact(s)
         	end
         
-        	if(edit>0)
+        	if(edit>=0)
         	  useHamming = true
         	  minmatchsize = s.length
         	  maxmatchsize = s.length
@@ -250,9 +378,17 @@ module Cassiopee
 		    			seq = extractSuffix(posArray[1],posArray[0])
 		    			seq.extend(Cassiopee)
 		    			if(useHamming)
-		    			  errors = seq.computeHamming(s,edit)
+						  if(@useAmbiguity && @ambiguous!=nil)
+						    errors = seq.computeHammingAmbiguous(s,edit,@ambiguous)
+						  else
+		    			    errors = seq.computeHamming(s,edit)
+						  end
 		    			else
-		    			  errors = seq.computeLevenshtein(s,edit)
+						  if(@useAmbiguity && @ambigous!=nil)
+						    errors = seq.computeLevenshteinAmbiguous(s,edit,@ambigous)
+						  else
+		    			    errors = seq.computeLevenshtein(s,edit)
+						  end						
 		    			end
 		    			if(errors>=0)
 		    				filteredPosArray = filter(posArray)
@@ -616,5 +752,6 @@ module Cassiopee
 			end
              
     end
+
 
 end

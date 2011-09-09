@@ -5,14 +5,15 @@
 
 <html>
 <head>
-  <title>filterCost (Cassiopee::Crawler)</title>
+  <title>clear (Cassiopee::Crawler)</title>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
 </head>
 <body class="standalone-code">
-  <pre><span class="ruby-comment cmt"># File lib/cassiopee.rb, line 109</span>
-                <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">filterCost</span>
-                  <span class="ruby-identifier">filterOptimal</span>(<span class="ruby-value">1</span>)
-                <span class="ruby-keyword kw">end</span></pre>
+  <pre><span class="ruby-comment cmt"># File lib/cassiopee.rb, line 215</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">clear</span>
+                <span class="ruby-ivar">@suffixes</span> = <span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span>
+                <span class="ruby-constant">File</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-ivar">@file_suffix</span><span class="ruby-operator">+</span><span class="ruby-constant">FILE_SUFFIX_POS</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-operator">!</span><span class="ruby-constant">File</span>.<span class="ruby-identifier">exists?</span>(<span class="ruby-ivar">@file_suffix</span><span class="ruby-operator">+</span><span class="ruby-constant">FILE_SUFFIX_POS</span>)
+        <span class="ruby-keyword kw">end</span></pre>
 </body>
 </html>
