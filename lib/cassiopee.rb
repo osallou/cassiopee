@@ -101,6 +101,14 @@ module Cassiopee
 			
 			@comments = Array["#"]
         end
+		
+		def filterLength
+		  filterOptimal(0)
+		end
+		
+		def filterCost
+		  filterOptimal(1)
+		end
         
         # Clear suffixes in memory
         # If using use_store, clear the store too
@@ -311,6 +319,34 @@ module Cassiopee
         	end
         end
         
+        def to_pos
+        	positions = Hash.new
+        	@matches.each do |match|
+        	  # match = Array[md5val, errors, posArray]
+        	  i=0
+			  len = 0
+        	  match[2].each do |pos|
+        	    if(i==0)
+        	      len = pos
+        	    else
+        	      if(positions.has_key?(pos))
+        	       posmatch = positions[pos]
+        	       posmatch << Array[len,match[1]]
+
+        	      
+        	      else
+        	        posmatch = Array.new
+        	        posmatch << Array[len,match[1]]
+        	        positions[pos] = posmatch
+        	      end
+        	    end
+        	    i += 1
+        	  end
+        	 
+        	end
+            return positions.sort
+        end
+        
         def to_s
         	puts '{ matches: "' << @matches.length << '" }'
         end
@@ -481,6 +517,103 @@ module Cassiopee
                     return obj
                 end
             end
+			
+			# Filter @matches to keep only the longest or the error less matches for a same start position
+			
+			def filterOptimal(type)
+	
+        	positions = Hash.new
+        	@matches.each do |match|
+        	  # match = Array[md5val, errors, posArray]
+        	  i=0
+			  len = 0
+        	  match[2].each do |pos|
+        	    if(i==0)
+        	      len = pos
+        	    else
+        	      if(positions.has_key?(pos))
+        	       posmatch = positions[pos]
+        	       posmatch << Array[len,match[1],match[0]]
+        	       #positions[pos] << posmatch
+        	      
+        	      else
+        	        posmatch = Array.new
+        	        posmatch << Array[len,match[1],match[0]]
+        	        positions[pos] = posmatch
+        	      end
+        	    end
+        	    i += 1
+        	  end
+        	end
+			
+            matchtoremove = Array.new
+			positions.each do |pos,posmatch|
+			 
+			    optimal = nil
+				match = nil
+			    count = 0
+				newoptimal = nil
+				newmatch = nil
+				
+			    (0..posmatch.length-1).each do |i|
+				solution = posmatch[i]				  
+				  if(i==0)
+				    if(type==0)
+			        # length
+			          optimal = solution[0]
+			        else
+			        # cost
+			          optimal = solution[1]	
+			        end				
+			        match = solution[2].to_s
+					#count += 1
+					next
+				  end
+				  
+			      newmatch = solution[2].to_s
+				  if(type==0)
+			      # length
+			        newoptimal = solution[0]
+				    if(newoptimal.to_i>optimal.to_i)
+				      optimal = newoptimal
+					  matchtoremove << match
+				  	  match = newmatch
+					else
+					  matchtoremove << newmatch
+				    end
+			      else
+			      # cost
+				    newoptimal = solution[1]
+				    if(newoptimal<optimal)
+				      optimal = newoptimal
+					  matchtoremove << match
+			  		  match = newmatch
+					else
+					  matchtoremove << newmatch
+				    end		
+			      end
+				  count += 1
+					
+				end			
+			  
+			end
+			
+			newmatches = Array.new
+			@matches.each do |match|
+			  found = false
+			  matchtoremove.each do |item|
+			    if(match[0]==item)
+				  found = true
+				  break
+				end
+			  end
+			  if(!found)
+			   newmatches << match
+			  end
+			end
+			@matches = newmatches
+			
+			end
              
     end
 
