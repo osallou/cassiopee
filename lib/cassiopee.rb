@@ -136,15 +136,14 @@ module Cassiopee
   # * ambigous is a Hash of char/Array of char mapping
   
   def isAmbiguousEqual(a,b,ambiguous)
-	if(ambiguous==nil || ambiguous[a.chr]==nil)
+	if(ambiguous==nil || (ambiguous[a.chr]==nil && ambiguous[b.chr]==nil ))
 	  if(a==b)
 	    return true
 	  else
 	    return false
 	  end
 	end
-	vin = "" << a.chr
-	if(ambiguous[a.chr].index(b.chr)!=nil)
+	if(ambiguous[a.chr].index(b.chr)!=nil || ambiguous[b.chr].index(a.chr)!=nil || a==b)
 	   return true
     else
 	   return false
