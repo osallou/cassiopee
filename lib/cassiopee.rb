@@ -213,6 +213,7 @@ module Cassiopee
         
         def clear
         	@suffixes = Hash.new
+		@matches = Array.new
         	File.delete(@file_suffix+FILE_SUFFIX_POS) unless !File.exists?(@file_suffix+FILE_SUFFIX_POS)
         end
     
