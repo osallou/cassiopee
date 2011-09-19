@@ -15,6 +15,8 @@ module CassiopeeMt
     # Filtering is used to split the input data according to maxthread
     # Matches of each thread are merge to matches of CrawlerMT
     class CrawlerMt < Crawler
+
+    MINSEQSIZE=10 
  
     # Max number fo threads to use
     attr_accessor  :maxthread
@@ -33,42 +35,66 @@ module CassiopeeMt
       crawler.file_suffix = @file_suffix
       crawler.loadIndex()
       #crawler.file_suffix = @file_suffix+"."+threadId.to_s
-      crawler.indexString(@sequence)
     end
 
    def searchExact(pattern)
-        nb = @sequence.length.div(maxthread)
-        min = 0
+        len = @sequence.length
+        if(@min_position>0)
+          min = @min_position
+         else
+          min = 0  
+        end
+         if(@max_position>0)
+           max = @max_position
+         else
+           max= @sequence.length
+        end
+        len = max - min 
+        if(len<MINSEQSIZE)
+              @maxthread=1
+        end
+        nb = len.div(maxthread)
         (1..maxthread).each do |i|
           crawler = Crawler.new
 	  setParams(crawler,i)
-          max = min + nb
+          curmax = min + nb
           if(i==maxthread)
-             max = @sequence.length
+             curmax = max
           end
-          crawler.filter_position(min,max)
-	  $log.debug("Start new Thread between " << min.to_s << " and " << max.to_s)
+          crawler.filter_position(min,curmax)
+	  $log.debug("Start new Thread between " << min.to_s << " and " << curmax.to_s)
           @th[i-1] = Thread.new{ Thread.current["matches"] = crawler.searchExact(pattern) }
-          min = max + 1
+          min = curmax + 1
         end
         @th.each {|t| t.join; t["matches"].each { |m| @matches << m }}
         return @matches
    end
 
    def searchApproximate(s,edit)
-        nb = @sequence.length.div(maxthread)
-        min = 0
+        len = @sequence.length
+        if(@min_position>0)
+          min = @min_position
+         else
+          min = 0 
+        end
+         if(@max_position>0)
+           max = @max_position
+         else
+           max = @sequence.length
+        end
+        len = max - min
+        nb = len.div(maxthread)
         (1..maxthread).each do |i|
           crawler = Crawler.new
           setParams(crawler,i)
-          max = min + nb
+          curmax = min + nb
           if(i==maxthread)
-             max = @sequence.length
+             curmax = max
           end
-          crawler.filter_position(min,max)
-          $log.debug("Start new Thread between " << min.to_s << " and " << max.to_s)
+          crawler.filter_position(min,curmax)
+          $log.debug("Start new Thread between " << min.to_s << " and " << curmax.to_s)
           @th[i-1] = Thread.new{ Thread.current["matches"] = crawler.searchApproximate(s,edit) }
-          min = max + 1
+          min = curmax + 1
         end
         @th.each {|t| t.join; t["matches"].each { |m| @matches << m }}
         return @matches
