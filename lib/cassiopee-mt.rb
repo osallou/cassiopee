@@ -83,6 +83,9 @@ module CassiopeeMt
            max = @sequence.length
         end
         len = max - min
+        if(len<MINSEQSIZE)
+              @maxthread=1
+        end
         nb = len.div(maxthread)
         (1..maxthread).each do |i|
           crawler = Crawler.new
