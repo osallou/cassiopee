@@ -92,23 +92,23 @@ Base class to index and search through a string
       <h3 class="section-bar">Methods</h3>
 
       <div class="name-list">
-      <a href="#M000009">clear</a>&nbsp;&nbsp;
-      <a href="#M000019">extractSuffix</a>&nbsp;&nbsp;
-      <a href="#M000018">filter</a>&nbsp;&nbsp;
-      <a href="#M000008">filterCost</a>&nbsp;&nbsp;
-      <a href="#M000007">filterLength</a>&nbsp;&nbsp;
-      <a href="#M000015">filter_position</a>&nbsp;&nbsp;
-      <a href="#M000011">indexFile</a>&nbsp;&nbsp;
-      <a href="#M000012">indexString</a>&nbsp;&nbsp;
-      <a href="#M000013">loadAmbiguityFile</a>&nbsp;&nbsp;
-      <a href="#M000014">loadIndex</a>&nbsp;&nbsp;
-      <a href="#M000006">new</a>&nbsp;&nbsp;
-      <a href="#M000020">next</a>&nbsp;&nbsp;
-      <a href="#M000017">searchApproximate</a>&nbsp;&nbsp;
-      <a href="#M000016">searchExact</a>&nbsp;&nbsp;
-      <a href="#M000010">setLogLevel</a>&nbsp;&nbsp;
-      <a href="#M000021">to_pos</a>&nbsp;&nbsp;
-      <a href="#M000022">to_s</a>&nbsp;&nbsp;
+      <a href="#M000018">clear</a>&nbsp;&nbsp;
+      <a href="#M000028">extractSuffix</a>&nbsp;&nbsp;
+      <a href="#M000027">filter</a>&nbsp;&nbsp;
+      <a href="#M000017">filterCost</a>&nbsp;&nbsp;
+      <a href="#M000016">filterLength</a>&nbsp;&nbsp;
+      <a href="#M000024">filter_position</a>&nbsp;&nbsp;
+      <a href="#M000020">indexFile</a>&nbsp;&nbsp;
+      <a href="#M000021">indexString</a>&nbsp;&nbsp;
+      <a href="#M000022">loadAmbiguityFile</a>&nbsp;&nbsp;
+      <a href="#M000023">loadIndex</a>&nbsp;&nbsp;
+      <a href="#M000015">new</a>&nbsp;&nbsp;
+      <a href="#M000029">next</a>&nbsp;&nbsp;
+      <a href="#M000026">searchApproximate</a>&nbsp;&nbsp;
+      <a href="#M000025">searchExact</a>&nbsp;&nbsp;
+      <a href="#M000019">setLogLevel</a>&nbsp;&nbsp;
+      <a href="#M000030">to_pos</a>&nbsp;&nbsp;
+      <a href="#M000031">to_s</a>&nbsp;&nbsp;
       </div>
     </div>
 
@@ -180,7 +180,7 @@ Max number fo threads to use (not yet used)
           <td class="context-item-value">&nbsp;[RW]&nbsp;</td>
           <td class="context-item-desc">
 Use alphabet ambiguity (dna/rna) in search, automatically set with <a
-href="Crawler.html#M000013">loadAmbiguityFile</a>
+href="Crawler.html#M000022">loadAmbiguityFile</a>
 
 </td>
         </tr>
@@ -202,12 +202,12 @@ Use persistent suffix file ?
     <div id="methods">
       <h3 class="section-bar">Public Class methods</h3>
 
-      <div id="method-M000006" class="method-detail">
-        <a name="M000006"></a>
+      <div id="method-M000015" class="method-detail">
+        <a name="M000015"></a>
 
         <div class="method-heading">
-          <a href="Crawler.src/M000006.html" target="Code" class="method-signature"
-            onclick="popupCode('Crawler.src/M000006.html');return false;">
+          <a href="Crawler.src/M000015.html" target="Code" class="method-signature"
+            onclick="popupCode('Crawler.src/M000015.html');return false;">
           <span class="method-name">new</span><span class="method-args">()</span>
           </a>
         </div>
@@ -218,12 +218,12 @@ Use persistent suffix file ?
 
       <h3 class="section-bar">Public Instance methods</h3>
 
-      <div id="method-M000009" class="method-detail">
-        <a name="M000009"></a>
+      <div id="method-M000018" class="method-detail">
+        <a name="M000018"></a>
 
         <div class="method-heading">
-          <a href="Crawler.src/M000009.html" target="Code" class="method-signature"
-            onclick="popupCode('Crawler.src/M000009.html');return false;">
+          <a href="Crawler.src/M000018.html" target="Code" class="method-signature"
+            onclick="popupCode('Crawler.src/M000018.html');return false;">
           <span class="method-name">clear</span><span class="method-args">()</span>
           </a>
         </div>
@@ -231,17 +231,17 @@ Use persistent suffix file ?
         <div class="method-description">
           <p>
 Clear suffixes in memory If using use_store, <a
-href="Crawler.html#M000009">clear</a> the store too
+href="Crawler.html#M000018">clear</a> the store too
 </p>
         </div>
       </div>
 
-      <div id="method-M000019" class="method-detail">
-        <a name="M000019"></a>
+      <div id="method-M000028" class="method-detail">
+        <a name="M000028"></a>
 
         <div class="method-heading">
-          <a href="Crawler.src/M000019.html" target="Code" class="method-signature"
-            onclick="popupCode('Crawler.src/M000019.html');return false;">
+          <a href="Crawler.src/M000028.html" target="Code" class="method-signature"
+            onclick="popupCode('Crawler.src/M000028.html');return false;">
           <span class="method-name">extractSuffix</span><span class="method-args">(start,len)</span>
           </a>
         </div>
@@ -253,12 +253,12 @@ Extract un suffix from suffix file based on md5 match
         </div>
       </div>
 
-      <div id="method-M000018" class="method-detail">
-        <a name="M000018"></a>
+      <div id="method-M000027" class="method-detail">
+        <a name="M000027"></a>
 
         <div class="method-heading">
-          <a href="Crawler.src/M000018.html" target="Code" class="method-signature"
-            onclick="popupCode('Crawler.src/M000018.html');return false;">
+          <a href="Crawler.src/M000027.html" target="Code" class="method-signature"
+            onclick="popupCode('Crawler.src/M000027.html');return false;">
           <span class="method-name">filter</span><span class="method-args">(posArray)</span>
           </a>
         </div>
@@ -266,17 +266,17 @@ Extract un suffix from suffix file based on md5 match
         <div class="method-description">
           <p>
 Filter the array of positions with defined position <a
-href="Crawler.html#M000018">filter</a>
+href="Crawler.html#M000027">filter</a>
 </p>
         </div>
       </div>
 
-      <div id="method-M000008" class="method-detail">
-        <a name="M000008"></a>
+      <div id="method-M000017" class="method-detail">
+        <a name="M000017"></a>
 
         <div class="method-heading">
-          <a href="Crawler.src/M000008.html" target="Code" class="method-signature"
-            onclick="popupCode('Crawler.src/M000008.html');return false;">
+          <a href="Crawler.src/M000017.html" target="Code" class="method-signature"
+            onclick="popupCode('Crawler.src/M000017.html');return false;">
           <span class="method-name">filterCost</span><span class="method-args">()</span>
           </a>
         </div>
@@ -285,12 +285,12 @@ href="Crawler.html#M000018">filter</a>
         </div>
       </div>
 
-      <div id="method-M000007" class="method-detail">
-        <a name="M000007"></a>
+      <div id="method-M000016" class="method-detail">
+        <a name="M000016"></a>
 
         <div class="method-heading">
-          <a href="Crawler.src/M000007.html" target="Code" class="method-signature"
-            onclick="popupCode('Crawler.src/M000007.html');return false;">
+          <a href="Crawler.src/M000016.html" target="Code" class="method-signature"
+            onclick="popupCode('Crawler.src/M000016.html');return false;">
           <span class="method-name">filterLength</span><span class="method-args">()</span>
           </a>
         </div>
@@ -299,12 +299,12 @@ href="Crawler.html#M000018">filter</a>
         </div>
       </div>
 
-      <div id="method-M000015" class="method-detail">
-        <a name="M000015"></a>
+      <div id="method-M000024" class="method-detail">
+        <a name="M000024"></a>
 
         <div class="method-heading">
-          <a href="Crawler.src/M000015.html" target="Code" class="method-signature"
-            onclick="popupCode('Crawler.src/M000015.html');return false;">
+          <a href="Crawler.src/M000024.html" target="Code" class="method-signature"
+            onclick="popupCode('Crawler.src/M000024.html');return false;">
           <span class="method-name">filter_position</span><span class="method-args">(min,max)</span>
           </a>
         </div>
@@ -318,12 +318,12 @@ max=0, then max is string length
         </div>
       </div>
 
-      <div id="method-M000011" class="method-detail">
-        <a name="M000011"></a>
+      <div id="method-M000020" class="method-detail">
+        <a name="M000020"></a>
 
         <div class="method-heading">
-          <a href="Crawler.src/M000011.html" target="Code" class="method-signature"
-            onclick="popupCode('Crawler.src/M000011.html');return false;">
+          <a href="Crawler.src/M000020.html" target="Code" class="method-signature"
+            onclick="popupCode('Crawler.src/M000020.html');return false;">
           <span class="method-name">indexFile</span><span class="method-args">(f)</span>
           </a>
         </div>
@@ -335,12 +335,12 @@ Index an input file Clear existing indexes
         </div>
       </div>
 
-      <div id="method-M000012" class="method-detail">
-        <a name="M000012"></a>
+      <div id="method-M000021" class="method-detail">
+        <a name="M000021"></a>
 
         <div class="method-heading">
-          <a href="Crawler.src/M000012.html" target="Code" class="method-signature"
-            onclick="popupCode('Crawler.src/M000012.html');return false;">
+          <a href="Crawler.src/M000021.html" target="Code" class="method-signature"
+            onclick="popupCode('Crawler.src/M000021.html');return false;">
           <span class="method-name">indexString</span><span class="method-args">(s)</span>
           </a>
         </div>
@@ -352,12 +352,12 @@ Index an input string Clear existing indexes
         </div>
       </div>
 
-      <div id="method-M000013" class="method-detail">
-        <a name="M000013"></a>
+      <div id="method-M000022" class="method-detail">
+        <a name="M000022"></a>
 
         <div class="method-heading">
-          <a href="Crawler.src/M000013.html" target="Code" class="method-signature"
-            onclick="popupCode('Crawler.src/M000013.html');return false;">
+          <a href="Crawler.src/M000022.html" target="Code" class="method-signature"
+            onclick="popupCode('Crawler.src/M000022.html');return false;">
           <span class="method-name">loadAmbiguityFile</span><span class="method-args">(f)</span>
           </a>
         </div>
@@ -374,12 +374,12 @@ Load ambiguity rules from a file File format should be:
         </div>
       </div>
 
-      <div id="method-M000014" class="method-detail">
-        <a name="M000014"></a>
+      <div id="method-M000023" class="method-detail">
+        <a name="M000023"></a>
 
         <div class="method-heading">
-          <a href="Crawler.src/M000014.html" target="Code" class="method-signature"
-            onclick="popupCode('Crawler.src/M000014.html');return false;">
+          <a href="Crawler.src/M000023.html" target="Code" class="method-signature"
+            onclick="popupCode('Crawler.src/M000023.html');return false;">
           <span class="method-name">loadIndex</span><span class="method-args">()</span>
           </a>
         </div>
@@ -391,12 +391,12 @@ Load sequence from a previous index command
         </div>
       </div>
 
-      <div id="method-M000020" class="method-detail">
-        <a name="M000020"></a>
+      <div id="method-M000029" class="method-detail">
+        <a name="M000029"></a>
 
         <div class="method-heading">
-          <a href="Crawler.src/M000020.html" target="Code" class="method-signature"
-            onclick="popupCode('Crawler.src/M000020.html');return false;">
+          <a href="Crawler.src/M000029.html" target="Code" class="method-signature"
+            onclick="popupCode('Crawler.src/M000029.html');return false;">
           <span class="method-name">next</span><span class="method-args">()</span>
           </a>
         </div>
@@ -408,12 +408,12 @@ Iterates over matches
         </div>
       </div>
 
-      <div id="method-M000017" class="method-detail">
-        <a name="M000017"></a>
+      <div id="method-M000026" class="method-detail">
+        <a name="M000026"></a>
 
         <div class="method-heading">
-          <a href="Crawler.src/M000017.html" target="Code" class="method-signature"
-            onclick="popupCode('Crawler.src/M000017.html');return false;">
+          <a href="Crawler.src/M000026.html" target="Code" class="method-signature"
+            onclick="popupCode('Crawler.src/M000026.html');return false;">
           <span class="method-name">searchApproximate</span><span class="method-args">(s,edit)</span>
           </a>
         </div>
@@ -436,12 +436,12 @@ Search an approximate string
         </div>
       </div>
 
-      <div id="method-M000016" class="method-detail">
-        <a name="M000016"></a>
+      <div id="method-M000025" class="method-detail">
+        <a name="M000025"></a>
 
         <div class="method-heading">
-          <a href="Crawler.src/M000016.html" target="Code" class="method-signature"
-            onclick="popupCode('Crawler.src/M000016.html');return false;">
+          <a href="Crawler.src/M000025.html" target="Code" class="method-signature"
+            onclick="popupCode('Crawler.src/M000025.html');return false;">
           <span class="method-name">searchExact</span><span class="method-args">(pattern)</span>
           </a>
         </div>
@@ -453,12 +453,12 @@ Search exact match
         </div>
       </div>
 
-      <div id="method-M000010" class="method-detail">
-        <a name="M000010"></a>
+      <div id="method-M000019" class="method-detail">
+        <a name="M000019"></a>
 
         <div class="method-heading">
-          <a href="Crawler.src/M000010.html" target="Code" class="method-signature"
-            onclick="popupCode('Crawler.src/M000010.html');return false;">
+          <a href="Crawler.src/M000019.html" target="Code" class="method-signature"
+            onclick="popupCode('Crawler.src/M000019.html');return false;">
           <span class="method-name">setLogLevel</span><span class="method-args">(level)</span>
           </a>
         </div>
@@ -470,12 +470,12 @@ Set Logger level
         </div>
       </div>
 
-      <div id="method-M000021" class="method-detail">
-        <a name="M000021"></a>
+      <div id="method-M000030" class="method-detail">
+        <a name="M000030"></a>
 
         <div class="method-heading">
-          <a href="Crawler.src/M000021.html" target="Code" class="method-signature"
-            onclick="popupCode('Crawler.src/M000021.html');return false;">
+          <a href="Crawler.src/M000030.html" target="Code" class="method-signature"
+            onclick="popupCode('Crawler.src/M000030.html');return false;">
           <span class="method-name">to_pos</span><span class="method-args">()</span>
           </a>
         </div>
@@ -484,12 +484,12 @@ Set Logger level
         </div>
       </div>
 
-      <div id="method-M000022" class="method-detail">
-        <a name="M000022"></a>
+      <div id="method-M000031" class="method-detail">
+        <a name="M000031"></a>
 
         <div class="method-heading">
-          <a href="Crawler.src/M000022.html" target="Code" class="method-signature"
-            onclick="popupCode('Crawler.src/M000022.html');return false;">
+          <a href="Crawler.src/M000031.html" target="Code" class="method-signature"
+            onclick="popupCode('Crawler.src/M000031.html');return false;">
           <span class="method-name">to_s</span><span class="method-args">()</span>
           </a>
         </div>
