@@ -319,6 +319,7 @@ module Cassiopee
         # Filter matches to be between min and max start position
         # If not using use_store, search speed is improved but existing indexes are cleared
         # If max=0, then max is string length
+		# Must be called after index creation or load
         
         def filter_position(min,max)
             if(!use_store)
@@ -344,6 +345,7 @@ module Cassiopee
         s = s.downcase
         
 		@matches.clear
+		@pattern = Digest::MD5.hexdigest(s)
 		
 		parseSuffixes(@sequence,s.length,s.length,0,s)
         
@@ -352,7 +354,7 @@ module Cassiopee
          # Search required length, compare (compare md5?)
          # MD5 = 128 bits, easier to compare for large strings
             
-			@pattern = Digest::MD5.hexdigest(s)
+			
 			matchsize = @pattern.length
 			
             @suffixes.each do |md5val,posArray|
@@ -397,12 +399,13 @@ module Cassiopee
 			s = s.downcase
             
             @matches.clear
+			@pattern = Digest::MD5.hexdigest(s)
 			
 			parseSuffixes(@sequence,minmatchsize,maxmatchsize,edit,s)
             
 			return @matches unless(method == METHOD_SUFFIX)
 			
-            @pattern = Digest::MD5.hexdigest(s)
+ 
             
         	      	
         	@suffixes.each do |md5val,posArray|
