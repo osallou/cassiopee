@@ -5,17 +5,16 @@
 
 <html>
 <head>
-  <title>setParams (CassiopeeMt::CrawlerMt)</title>
+  <title>new (CassiopeeMt::CrawlerMt)</title>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
 </head>
 <body class="standalone-code">
-  <pre><span class="ruby-comment cmt"># File lib/cassiopee-mt.rb, line 33</span>
-    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">setParams</span>(<span class="ruby-identifier">crawler</span>,<span class="ruby-identifier">threadId</span>)
-      <span class="ruby-identifier">crawler</span>.<span class="ruby-identifier">setLogLevel</span>(<span class="ruby-identifier">$log</span>.<span class="ruby-identifier">level</span>)
-      <span class="ruby-identifier">crawler</span>.<span class="ruby-identifier">file_suffix</span> = <span class="ruby-ivar">@file_suffix</span>
-      <span class="ruby-identifier">crawler</span>.<span class="ruby-identifier">loadIndex</span>()
-      <span class="ruby-comment cmt">#crawler.file_suffix = @file_suffix+&quot;.&quot;+threadId.to_s</span>
+  <pre><span class="ruby-comment cmt"># File lib/cassiopee-mt.rb, line 26</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>
+        <span class="ruby-keyword kw">super</span>
+        <span class="ruby-ivar">@th</span> = []
+        <span class="ruby-ivar">@matches</span> = <span class="ruby-constant">Array</span>.<span class="ruby-identifier">new</span>
     <span class="ruby-keyword kw">end</span></pre>
 </body>
 </html>

@@ -5,30 +5,71 @@
 
 <html>
 <head>
-  <title>filter (Cassiopee::Crawler)</title>
+  <title>searchApproximate (Cassiopee::Crawler)</title>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
 </head>
 <body class="standalone-code">
-  <pre><span class="ruby-comment cmt"># File lib/cassiopee.rb, line 439</span>
-        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">filter</span>(<span class="ruby-identifier">posArray</span>)
-                <span class="ruby-identifier">$log</span>.<span class="ruby-identifier">debug</span>(<span class="ruby-value str">&quot;filter the position with &quot;</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-ivar">@min_position</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot; and &quot;</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-ivar">@max_position</span>.<span class="ruby-identifier">to_s</span>)
-                <span class="ruby-keyword kw">if</span>(<span class="ruby-ivar">@min_position</span><span class="ruby-operator">==</span><span class="ruby-value">0</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-ivar">@max_position</span><span class="ruby-operator">==</span><span class="ruby-value">0</span>)
-                        <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">posArray</span>
-                <span class="ruby-keyword kw">end</span>
-                <span class="ruby-identifier">filteredArray</span> = <span class="ruby-constant">Array</span>.<span class="ruby-identifier">new</span>
-                <span class="ruby-identifier">i</span> = <span class="ruby-value">0</span>
-                <span class="ruby-identifier">posArray</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">pos</span><span class="ruby-operator">|</span>
-                        <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">i</span><span class="ruby-operator">==</span><span class="ruby-value">0</span>)
-                                <span class="ruby-comment cmt"># First elt of array is match length</span>
-                                <span class="ruby-identifier">filteredArray</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">pos</span>
+  <pre><span class="ruby-comment cmt"># File lib/cassiopee.rb, line 378</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">searchApproximate</span>(<span class="ruby-identifier">s</span>,<span class="ruby-identifier">edit</span>)
+                        <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">isSameSearch?</span>(<span class="ruby-identifier">s</span>))
+                                <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">filterMatches</span>
                         <span class="ruby-keyword kw">end</span>
-                        <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">i</span><span class="ruby-operator">&gt;</span><span class="ruby-value">0</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">pos</span><span class="ruby-operator">&gt;=</span><span class="ruby-ivar">@min_position</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">pos</span><span class="ruby-operator">&lt;=</span><span class="ruby-ivar">@max_position</span>)
-                                <span class="ruby-identifier">filteredArray</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">pos</span>
-                        <span class="ruby-keyword kw">end</span>
-                        <span class="ruby-identifier">i</span> <span class="ruby-operator">+=</span><span class="ruby-value">1</span>
+                
+                <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">edit</span><span class="ruby-operator">==</span><span class="ruby-value">0</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-ivar">@useAmbiguity</span>) 
+                        <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">searchExact</span>(<span class="ruby-identifier">s</span>)
                 <span class="ruby-keyword kw">end</span>
-                <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">filteredArray</span>
+                        <span class="ruby-identifier">allowederrors</span> = <span class="ruby-identifier">edit</span>
+                <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">edit</span><span class="ruby-operator">&gt;=</span><span class="ruby-value">0</span>)
+                  <span class="ruby-identifier">useHamming</span> = <span class="ruby-keyword kw">true</span>
+                  <span class="ruby-identifier">minmatchsize</span> = <span class="ruby-identifier">s</span>.<span class="ruby-identifier">length</span>
+                  <span class="ruby-identifier">maxmatchsize</span> = <span class="ruby-identifier">s</span>.<span class="ruby-identifier">length</span>
+                <span class="ruby-keyword kw">else</span>
+                  <span class="ruby-identifier">useHamming</span> = <span class="ruby-keyword kw">false</span>
+                  <span class="ruby-identifier">edit</span> = <span class="ruby-identifier">edit</span> <span class="ruby-operator">*</span> (<span class="ruby-value">-1</span>)
+              <span class="ruby-identifier">minmatchsize</span> = <span class="ruby-identifier">s</span>.<span class="ruby-identifier">length</span> <span class="ruby-operator">-</span> <span class="ruby-identifier">edit</span>
+              <span class="ruby-identifier">maxmatchsize</span> = <span class="ruby-identifier">s</span>.<span class="ruby-identifier">length</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">edit</span>
+            <span class="ruby-keyword kw">end</span>
+                        
+                        <span class="ruby-identifier">s</span> = <span class="ruby-identifier">s</span>.<span class="ruby-identifier">downcase</span>
+            
+            <span class="ruby-ivar">@matches</span>.<span class="ruby-identifier">clear</span>
+                        <span class="ruby-ivar">@pattern</span> = <span class="ruby-constant">Digest</span><span class="ruby-operator">::</span><span class="ruby-constant">MD5</span>.<span class="ruby-identifier">hexdigest</span>(<span class="ruby-identifier">s</span>)
+                        
+                        <span class="ruby-identifier">parseSuffixes</span>(<span class="ruby-ivar">@sequence</span>,<span class="ruby-identifier">minmatchsize</span>,<span class="ruby-identifier">maxmatchsize</span>,<span class="ruby-identifier">allowederrors</span>,<span class="ruby-identifier">s</span>)
+            
+                        <span class="ruby-keyword kw">return</span> <span class="ruby-ivar">@matches</span> <span class="ruby-keyword kw">unless</span>(<span class="ruby-identifier">method</span> <span class="ruby-operator">==</span> <span class="ruby-constant">METHOD_SUFFIX</span>)
+                        
+ 
+            
+                       
+                <span class="ruby-ivar">@suffixes</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">md5val</span>,<span class="ruby-identifier">posArray</span><span class="ruby-operator">|</span>
+                        <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">md5val</span> <span class="ruby-operator">==</span> <span class="ruby-constant">SUFFIXLEN</span>)
+                                <span class="ruby-keyword kw">next</span>
+                        <span class="ruby-keyword kw">end</span>
+                        <span class="ruby-keyword kw">if</span> (<span class="ruby-identifier">md5val</span> <span class="ruby-operator">==</span> <span class="ruby-ivar">@pattern</span>)
+                                <span class="ruby-identifier">filteredPosArray</span> = <span class="ruby-identifier">filter</span>(<span class="ruby-identifier">posArray</span>)
+                    <span class="ruby-identifier">match</span> = <span class="ruby-constant">Array</span>[<span class="ruby-identifier">md5val</span>, <span class="ruby-value">0</span>, <span class="ruby-identifier">filteredPosArray</span>]
+                              <span class="ruby-identifier">$log</span>.<span class="ruby-identifier">debug</span> <span class="ruby-value str">&quot;Match: &quot;</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">match</span>.<span class="ruby-identifier">inspect</span>
+                              <span class="ruby-ivar">@matches</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">match</span>
+                      <span class="ruby-keyword kw">else</span>
+                              <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">posArray</span>[<span class="ruby-value">0</span>]<span class="ruby-operator">&gt;=</span> <span class="ruby-identifier">minmatchsize</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">posArray</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">&lt;=</span> <span class="ruby-identifier">maxmatchsize</span>)
+                                      <span class="ruby-comment cmt"># Get string</span>
+                                      <span class="ruby-identifier">seq</span> = <span class="ruby-identifier">extractSuffix</span>(<span class="ruby-identifier">posArray</span>[<span class="ruby-value">1</span>],<span class="ruby-identifier">posArray</span>[<span class="ruby-value">0</span>])
+                                                <span class="ruby-identifier">errors</span> = <span class="ruby-identifier">isApproximateEqual?</span>(<span class="ruby-identifier">seq</span>,<span class="ruby-identifier">s</span>,<span class="ruby-identifier">useHamming</span>,<span class="ruby-identifier">edit</span>)
+                                                
+                                      <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">errors</span><span class="ruby-operator">&gt;=</span><span class="ruby-value">0</span>)
+                                              <span class="ruby-identifier">filteredPosArray</span> = <span class="ruby-identifier">filter</span>(<span class="ruby-identifier">posArray</span>)
+                                          <span class="ruby-identifier">match</span> = <span class="ruby-constant">Array</span>[<span class="ruby-identifier">md5val</span>, <span class="ruby-identifier">errors</span>, <span class="ruby-identifier">filteredPosArray</span>]
+                                              <span class="ruby-identifier">$log</span>.<span class="ruby-identifier">debug</span> <span class="ruby-value str">&quot;Match: &quot;</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">match</span>.<span class="ruby-identifier">inspect</span>
+                                              <span class="ruby-ivar">@matches</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">match</span>
+                                      <span class="ruby-keyword kw">end</span>
+                              <span class="ruby-keyword kw">end</span>
+                <span class="ruby-keyword kw">end</span>
+                
+                <span class="ruby-keyword kw">end</span>
+                
+                <span class="ruby-keyword kw">return</span> <span class="ruby-ivar">@matches</span> 
         <span class="ruby-keyword kw">end</span></pre>
 </body>
 </html>

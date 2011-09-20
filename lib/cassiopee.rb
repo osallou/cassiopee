@@ -162,6 +162,7 @@ module Cassiopee
 	# Method for search FORCE or SUFFIX
 	# * SUFFIX loads all suffixes and search through them afterwards, interesting for multiple searches (suffixes are reused)
 	# * FORCE checks matches while crossing the suffixes. Does not keep parsed data for later search
+	#   FORCE method does not yet support optimal filters
 	attr_accessor	:method
 	
 	METHOD_DIRECT = 0

@@ -13,13 +13,13 @@
   <pre><span class="ruby-comment cmt"># File tests/test-suite.rb, line 10</span>
   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">test_exactsearch</span>
     <span class="ruby-identifier">crawler</span> = <span class="ruby-constant">Cassiopee</span><span class="ruby-operator">::</span><span class="ruby-constant">Crawler</span>.<span class="ruby-identifier">new</span>
-    <span class="ruby-identifier">crawler</span>.<span class="ruby-identifier">setLogLevel</span>(<span class="ruby-constant">Logger</span><span class="ruby-operator">::</span><span class="ruby-constant">ERROR</span>)
+    <span class="ruby-identifier">crawler</span>.<span class="ruby-identifier">setLogLevel</span>(<span class="ruby-constant">Logger</span><span class="ruby-operator">::</span><span class="ruby-constant">DEBUG</span>)
     <span class="ruby-identifier">crawler</span>.<span class="ruby-identifier">indexString</span>(<span class="ruby-value str">'my sample example'</span>)
     <span class="ruby-identifier">matches</span> = <span class="ruby-identifier">crawler</span>.<span class="ruby-identifier">searchExact</span>(<span class="ruby-value str">'ampl'</span>)
-    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value">1</span>,<span class="ruby-identifier">matches</span>.<span class="ruby-identifier">length</span>)
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value">2</span>,<span class="ruby-identifier">matches</span>.<span class="ruby-identifier">length</span>)
     <span class="ruby-comment cmt"># Minus 1, because first element is len of match</span>
-    <span class="ruby-identifier">match</span> = <span class="ruby-identifier">crawler</span>.<span class="ruby-identifier">next</span>()
-    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value">2</span>,<span class="ruby-identifier">match</span>[<span class="ruby-value">2</span>].<span class="ruby-identifier">length</span><span class="ruby-operator">-</span><span class="ruby-value">1</span>)
+    <span class="ruby-comment cmt">#match = crawler.next()</span>
+    <span class="ruby-comment cmt">#assert_equal(2,match[2].length-1)</span>
   <span class="ruby-keyword kw">end</span></pre>
 </body>
 </html>

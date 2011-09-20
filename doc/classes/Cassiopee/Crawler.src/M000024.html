@@ -5,29 +5,29 @@
 
 <html>
 <head>
-  <title>loadIndex (Cassiopee::Crawler)</title>
+  <title>loadAmbiguityFile (Cassiopee::Crawler)</title>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
 </head>
 <body class="standalone-code">
-  <pre><span class="ruby-comment cmt"># File lib/cassiopee.rb, line 300</span>
-                <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">loadIndex</span>
-                        <span class="ruby-identifier">seq</span> = <span class="ruby-value str">''</span>
-                        <span class="ruby-keyword kw">begin</span>
-                                <span class="ruby-identifier">file</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">new</span>(<span class="ruby-ivar">@file_suffix</span><span class="ruby-operator">+</span><span class="ruby-constant">FILE_SUFFIX_EXT</span>, <span class="ruby-value str">&quot;r&quot;</span>)
-                                <span class="ruby-keyword kw">while</span> (<span class="ruby-identifier">line</span> = <span class="ruby-identifier">file</span>.<span class="ruby-identifier">gets</span>)
-                                        <span class="ruby-identifier">input</span> = <span class="ruby-identifier">line</span>.<span class="ruby-identifier">downcase</span>.<span class="ruby-identifier">chomp</span>
-                                        <span class="ruby-identifier">seq</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">input</span>
-                                <span class="ruby-keyword kw">end</span>
-                                <span class="ruby-identifier">file</span>.<span class="ruby-identifier">close</span>
-                        <span class="ruby-keyword kw">rescue</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">err</span>
-                                <span class="ruby-identifier">$log</span>.<span class="ruby-identifier">error</span>(<span class="ruby-node">&quot;Exception: #{err}&quot;</span>)
-                                <span class="ruby-identifier">exit</span>()
-                        <span class="ruby-keyword kw">end</span>
-                        <span class="ruby-ivar">@sequence</span> = <span class="ruby-identifier">seq</span>
-                        <span class="ruby-identifier">clear</span>()
-            <span class="ruby-ivar">@min_position</span> = <span class="ruby-value">0</span>
-                <span class="ruby-ivar">@max_position</span> = <span class="ruby-value">0</span>
+  <pre><span class="ruby-comment cmt"># File lib/cassiopee.rb, line 279</span>
+                <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">loadAmbiguityFile</span>(<span class="ruby-identifier">f</span>)
+                  <span class="ruby-keyword kw">if</span>(<span class="ruby-operator">!</span><span class="ruby-constant">File</span>.<span class="ruby-identifier">exists?</span>(<span class="ruby-identifier">f</span>))
+                     <span class="ruby-identifier">$log</span>.<span class="ruby-identifier">error</span>(<span class="ruby-value str">&quot;File &quot;</span><span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">f</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot;does not exists&quot;</span>)
+                         <span class="ruby-identifier">exit</span>(<span class="ruby-value">1</span>)
+                  <span class="ruby-keyword kw">end</span>
+                  <span class="ruby-ivar">@ambiguous</span> = <span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span>
+                  <span class="ruby-identifier">file</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">f</span>, <span class="ruby-value str">&quot;r&quot;</span>)
+                  <span class="ruby-keyword kw">while</span> (<span class="ruby-identifier">line</span> = <span class="ruby-identifier">file</span>.<span class="ruby-identifier">gets</span>)
+                    <span class="ruby-identifier">definition</span> = <span class="ruby-identifier">line</span>.<span class="ruby-identifier">downcase</span>.<span class="ruby-identifier">chomp</span>
+                        <span class="ruby-identifier">ambdef</span> = <span class="ruby-identifier">definition</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">'='</span>)
+                        <span class="ruby-identifier">ambequal</span> = <span class="ruby-identifier">ambdef</span>[<span class="ruby-value">1</span>].<span class="ruby-identifier">split</span>(<span class="ruby-value str">','</span>)
+                        <span class="ruby-ivar">@ambiguous</span>[<span class="ruby-identifier">ambdef</span>[<span class="ruby-value">0</span>]] = <span class="ruby-identifier">ambequal</span>
+                  <span class="ruby-keyword kw">end</span>
+                  <span class="ruby-ivar">@useAmbiguity</span> = <span class="ruby-keyword kw">true</span>
+                  <span class="ruby-identifier">$log</span>.<span class="ruby-identifier">debug</span>(<span class="ruby-value str">&quot;loaded ambiguity rules: &quot;</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-ivar">@ambiguous</span>.<span class="ruby-identifier">inspect</span>())
+                  <span class="ruby-identifier">file</span>.<span class="ruby-identifier">close</span>
+                
                 <span class="ruby-keyword kw">end</span></pre>
 </body>
 </html>

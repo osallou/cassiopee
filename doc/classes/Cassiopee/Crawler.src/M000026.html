@@ -5,44 +5,20 @@
 
 <html>
 <head>
-  <title>searchExact (Cassiopee::Crawler)</title>
+  <title>filter_position (Cassiopee::Crawler)</title>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
 </head>
 <body class="standalone-code">
-  <pre><span class="ruby-comment cmt"># File lib/cassiopee.rb, line 335</span>
-        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">searchExact</span>(<span class="ruby-identifier">s</span>)
-                
-                <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">isSameSearch?</span>(<span class="ruby-identifier">s</span>))
-                        <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">filterMatches</span>
+  <pre><span class="ruby-comment cmt"># File lib/cassiopee.rb, line 324</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">filter_position</span>(<span class="ruby-identifier">min</span>,<span class="ruby-identifier">max</span>)
+            <span class="ruby-keyword kw">if</span>(<span class="ruby-operator">!</span><span class="ruby-identifier">use_store</span>)
+                        <span class="ruby-identifier">clear</span>()
                 <span class="ruby-keyword kw">end</span>
-                
-                <span class="ruby-keyword kw">if</span>(<span class="ruby-ivar">@useAmbiguity</span>)
-                  <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">searchApproximate</span>(<span class="ruby-identifier">s</span>,<span class="ruby-value">0</span>)
-                <span class="ruby-keyword kw">end</span>
-        <span class="ruby-identifier">s</span> = <span class="ruby-identifier">s</span>.<span class="ruby-identifier">downcase</span>
-        
-                <span class="ruby-ivar">@matches</span>.<span class="ruby-identifier">clear</span>
-                
-                <span class="ruby-identifier">parseSuffixes</span>(<span class="ruby-ivar">@sequence</span>,<span class="ruby-identifier">s</span>.<span class="ruby-identifier">length</span>,<span class="ruby-identifier">s</span>.<span class="ruby-identifier">length</span>,<span class="ruby-value">0</span>,<span class="ruby-identifier">s</span>)
-        
-                <span class="ruby-keyword kw">return</span> <span class="ruby-ivar">@matches</span> <span class="ruby-keyword kw">unless</span>(<span class="ruby-identifier">method</span> <span class="ruby-operator">==</span> <span class="ruby-constant">METHOD_SUFFIX</span>)
-                
-         <span class="ruby-comment cmt"># Search required length, compare (compare md5?)</span>
-         <span class="ruby-comment cmt"># MD5 = 128 bits, easier to compare for large strings</span>
-            
-                        <span class="ruby-ivar">@pattern</span> = <span class="ruby-constant">Digest</span><span class="ruby-operator">::</span><span class="ruby-constant">MD5</span>.<span class="ruby-identifier">hexdigest</span>(<span class="ruby-identifier">s</span>)
-                        <span class="ruby-identifier">matchsize</span> = <span class="ruby-ivar">@pattern</span>.<span class="ruby-identifier">length</span>
-                        
-            <span class="ruby-ivar">@suffixes</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">md5val</span>,<span class="ruby-identifier">posArray</span><span class="ruby-operator">|</span>
-                <span class="ruby-keyword kw">if</span> (<span class="ruby-identifier">isMatchEqual?</span>(<span class="ruby-identifier">md5val</span>))
-                    <span class="ruby-identifier">match</span> = <span class="ruby-constant">Array</span>[<span class="ruby-identifier">md5val</span>, <span class="ruby-value">0</span>, <span class="ruby-identifier">posArray</span>]
-                              <span class="ruby-identifier">$log</span>.<span class="ruby-identifier">debug</span> <span class="ruby-value str">&quot;Match: &quot;</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">match</span>.<span class="ruby-identifier">inspect</span>
-                              <span class="ruby-ivar">@matches</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">match</span>
-                <span class="ruby-keyword kw">end</span>
-            <span class="ruby-keyword kw">end</span>
-        <span class="ruby-keyword kw">return</span> <span class="ruby-ivar">@matches</span> 
-        
+                        <span class="ruby-ivar">@prev_min_position</span> = <span class="ruby-ivar">@min_position</span>
+                        <span class="ruby-ivar">@prev_max_position</span> = <span class="ruby-ivar">@max_position</span>
+                <span class="ruby-ivar">@min_position</span> = <span class="ruby-identifier">min</span>
+                <span class="ruby-ivar">@max_position</span> = <span class="ruby-identifier">max</span>
         <span class="ruby-keyword kw">end</span></pre>
 </body>
 </html>
