@@ -652,6 +652,7 @@ module Cassiopee
 			end
 		
 			# Update cache object with current object parameters
+			# * method: 0 -> exact, 1 -> hamming, 2 -> edit
 			def updateCache(method,errors)
 				@cache.file_suffix = @file_suffix
 				@cache.min_position = @min_position
