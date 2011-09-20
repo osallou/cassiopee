@@ -9,7 +9,7 @@ class TestCrawler < Test::Unit::TestCase
  
   def test_exactsearch
     crawler = Cassiopee::Crawler.new
-    crawler.setLogLevel(Logger::DEBUG)
+    #crawler.setLogLevel(Logger::DEBUG)
     crawler.indexString('my sample example')
     matches = crawler.searchExact('ampl')
     assert_equal(2,matches.length)
@@ -66,6 +66,36 @@ class TestCrawler < Test::Unit::TestCase
     assert_equal(1,matches.length)
   end
 
+  def test_cache
+
+    crawler = Cassiopee::Crawler.new
+    crawler.indexString('my sample example')
+    matches = crawler.searchApproximate('ebampl',-1)
+
+    cache = Cassiopee::CrawlerCache.new
+    cache.method = 2
+    cache.min_position = 0
+    cache.max_position = 0
+    cache.errors = 1
+    cache.saveCache(matches)
+
+    cache = Cassiopee::CrawlerCache.new
+    cache.method = 2
+    cache.min_position = 0
+    cache.max_position = 0
+    cache.errors = 1
+    cachematches = cache.loadCache
+    assert_equal(1,cachematches.length)
+
+    cache = Cassiopee::CrawlerCache.new
+    cache.method = 2
+    cache.min_position = 0
+    cache.max_position = 0
+    cache.errors = 2
+    cachematches = cache.loadCache
+    assert_equal(0,cachematches.length)
+
+  end
 end
 
 

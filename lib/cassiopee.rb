@@ -144,6 +144,106 @@ module Cassiopee
 	end
   end
  
+	# Class maning cache of results
+ 
+	class CrawlerCache
+	
+		FILE_CACHE_EXT = ".sfc"
+
+		# Suffix files name/path
+		attr_accessor  :file_suffix
+		
+		# search exact: 0
+		# hamming     : 1
+		# edit        : 2
+		attr_accessor  :method
+	
+		# filter
+		attr_accessor  :min_position
+		attr_accessor  :max_position
+		
+		# max errors
+		attr_accessor	:errors
+		
+		attr_accessor	:cache
+	
+		$log = Logger.new(STDOUT)
+		$log.level = Logger::INFO		
+	
+		def setLogger(userlogger)
+			$log = userlogger
+		end
+	
+		def initialize
+			@file_suffix = "crawler"
+        end
+	
+		# Loads cache from file
+		def loadCache
+            	return nil unless File.exists?(@file_suffix+FILE_CACHE_EXT)
+                begin
+                  file = Zlib::GzipReader.open(@file_suffix+FILE_CACHE_EXT)
+                rescue Zlib::GzipFile::Error
+                  file = File.open(@file_suffix+FILE_CACHE_EXT, 'r')
+                ensure
+                    obj =  Marshal.load file.read
+                    file.close
+					if(method!=obj.method || min_position<obj.min_position || max_position>obj.max_position || errors>obj.errors)
+						return Array.new
+					end
+                    return filterCache(obj)
+                end			
+		end
+	
+		# Save self to cache, with cache object set from obj
+		def saveCache(obj)
+			self.cache = obj
+			marshal_dump = Marshal.dump(self)
+			sfxpos = File.new(@file_suffix+FILE_CACHE_EXT,'w')
+			sfxpos = Zlib::GzipWriter.new(sfxpos)
+			sfxpos.write marshal_dump
+			sfxpos.close
+		end
+		
+		def clearCache
+			File.delete(@file_suffix+FILE_CACHE_EXT) unless !File.exists?(@file_suffix+FILE_CACHE_EXT)
+		end
+		
+		private
+		
+		# filter cache according to settings
+		# obj: cache object
+		def filterCache(cacheobject)
+			
+			realmatches = Array.new
+			if(cacheobject==nil)
+				return realmatches
+			end
+			
+			cacheobject.cache.each do |obj|
+				if(obj[1]>self.errors)
+					next
+				end
+				realpos = Array.new
+				realpos << obj[2][0]
+				(1..obj[2].length-1).each do |i|
+				    curpos= obj[2][i]
+					if((curpos<=max_position || max_position==0) && curpos>=min_position)
+						realpos << curpos
+					end
+				end
+				if(realpos.length<=1)
+					next
+				end
+				realmatches << Array[obj[0],obj[1],realpos]
+				
+			end
+			return realmatches
+		end
+	
+	end
+ 
+ 
  	# Base class to index and search through a string 
  
     class Crawler
@@ -335,10 +435,6 @@ module Cassiopee
         
         def searchExact(s)
 		
-		if(isSameSearch?(s))
-			return filterMatches
-		end
-		
 		if(@useAmbiguity)
 		  return searchApproximate(s,0)
 		end
@@ -376,9 +472,6 @@ module Cassiopee
         
         
         def searchApproximate(s,edit)
-			if(isSameSearch?(s))
-				return filterMatches
-			end
 		
         	if(edit==0 && !@useAmbiguity) 
         		return searchExact(s)
@@ -553,30 +646,7 @@ module Cassiopee
 		    			end
 			end
 		
-			# Check is current search is the same, or within a previous search
-			def isSameSearch?(s)
-				if(@pattern!=nil && @pattern == Digest::MD5.hexdigest(s))
-					if(@min_position>=@prev_min_position && @max_position <= @prev_max_position)
-						return true
-					end
-				end
-				return false
-			end
-			
-			# Filter matches to remove positions out of bounds from a previous search
-			
-			def filterMatches
-				newmatches = Array.new
-				@matches.each do |match|
-							filteredPosArray = filter(posArray)
-							if(filteredPosArray.length>1)
-								match = Array[match[0], match[1], filteredPosArray]
-								newmatches << match
-							end
-				
-				end
-				return newmatches
-			end
+
 		
         
         	# Parse input string
