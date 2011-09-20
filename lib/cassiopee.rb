@@ -613,7 +613,11 @@ module Cassiopee
                     	@suffix = s[j,i]
                     	@suffixmd5 = Digest::MD5.hexdigest(@suffix)
                     	@position = j
-                    	$log.debug("add "+@suffix+" at pos "+@position.to_s)
+						progress = (@position * 100).div(@sequence.length)
+						if((progress % 10) == 0)
+							$log.debug("progress: " << progress.to_s)
+						end
+                    	#$log.debug("add "+@suffix+" at pos "+@position.to_s)
                     	nbSuffix += addSuffix(@suffixmd5, @position,i)
                     end
                     $log.debug("Nb suffix found: " << nbSuffix.to_s << ' for length ' << i.to_s)
