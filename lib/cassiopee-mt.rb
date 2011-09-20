@@ -34,6 +34,7 @@ module CassiopeeMt
       crawler.setLogLevel($log.level)
       crawler.file_suffix = @file_suffix
       crawler.loadIndex()
+	  crawler.method = method
       #crawler.file_suffix = @file_suffix+"."+threadId.to_s
     end
 
