@@ -670,7 +670,6 @@ module Cassiopee
                             	input = line.downcase.chomp
 								skip = false
 								comments.each do |c|
-								$log.debug("skip line ?" << c << " == " << input[0])
 									if(input[0] == c[0])
 										# Line start with a comment char, skip it
 										$log.debug("skip line")
