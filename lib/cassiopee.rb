@@ -34,7 +34,6 @@ module Cassiopee
     # Compute Hamming distance but using a mapping matrix of alphabet ambiguity
     
     def computeHammingAmbiguous(pattern,hamming,ambiguous)
-    	pattern = pattern.downcase
     	nberr = 0
     	(0..(self.length-1)).each do |c|
     		if(!isAmbiguousEqual(pattern[c],self[c],ambiguous))
@@ -52,7 +51,6 @@ module Cassiopee
     # Return -1 if max is reached
     
     def computeHamming(pattern,hamming)
-    	pattern = pattern.downcase
     	nberr = 0
     	(0..(self.length-1)).each do |c|
     		if(pattern[c] != self[c])
@@ -72,7 +70,6 @@ module Cassiopee
     # Return -1 if max is reached
     
     def computeLevenshtein(pattern,edit)
-    	pattern = pattern.downcase
     	
     	distance = Text::Levenshtein.distance(self, pattern)
     	
@@ -91,44 +88,43 @@ module Cassiopee
 	
     def computeLevenshteinAmbiguous(pattern, edit, ambiguous)
 	
-	  pattern = pattern.downcase
-      encoding = defined?(Encoding) ? self.encoding.to_s : $KCODE
+		encoding = defined?(Encoding) ? self.encoding.to_s : $KCODE
 
-    if Text.encoding_of(self) =~ /^U/i
-      unpack_rule = 'U*'
-    else
-      unpack_rule = 'C*'
-    end
+		if Text.encoding_of(self) =~ /^U/i
+			unpack_rule = 'U*'
+		else
+			unpack_rule = 'C*'
+		end
 
-    s = self.unpack(unpack_rule)
-    t = pattern.unpack(unpack_rule)
-    n = s.length
-    m = t.length
-    return m if (0 == n)
-    return n if (0 == m)
+		s = self.unpack(unpack_rule)
+		t = pattern.unpack(unpack_rule)
+		n = s.length
+		m = t.length
+		return m if (0 == n)
+		return n if (0 == m)
 
-    d = (0..m).to_a
-    x = nil
+		d = (0..m).to_a
+		x = nil
 
-    (0...n).each do |i|
-      e = i+1
-      (0...m).each do |j|
-        cost = (isAmbiguousEqual(s[i],t[j],ambiguous)) ? 0 : 1
-        x = [
-          d[j+1] + 1, # insertion
-          e + 1,      # deletion
-          d[j] + cost # substitution
-        ].min
-        d[j] = e
-        e = x
-      end
-      d[m] = x
-    end
-    if(x>edit)
-    return -1
-	end
+		(0...n).each do |i|
+			e = i+1
+			(0...m).each do |j|
+				cost = (isAmbiguousEqual(s[i],t[j],ambiguous)) ? 0 : 1
+				x = [
+					d[j+1] + 1, # insertion
+					e + 1,      # deletion
+					d[j] + cost # substitution
+				].min
+				d[j] = e
+				e = x
+			end
+			d[m] = x
+		end
+		if(x>edit)
+			return -1
+		end
 	
-	return x
+		return x
   end
   
   
@@ -168,7 +164,14 @@ module Cassiopee
     @min_position = 0
     @max_position = 0
 	
+	# Previous position filter
+	@prev_min_position = 0
+	@prev_max_position = 0
+	
 	@ambiguous = nil
+	
+	@pattern = nil
+	
     
     FILE_SUFFIX_EXT = ".sfx"
     FILE_SUFFIX_POS = ".sfp"
@@ -184,6 +187,9 @@ module Cassiopee
         def initialize
             @useAmbiguity = false
             @file_suffix = "crawler"
+			
+			@prev_min_position = 0
+			@prev_max_position = 0
             
             @suffix = nil
             @suffixmd5 = nil
@@ -191,7 +197,7 @@ module Cassiopee
             
             @suffixes = Hash.new
             
-            @matches = nil
+            @matches = Array.new
             @curmatch = 0
             @use_store = false
             
@@ -213,7 +219,10 @@ module Cassiopee
         
         def clear
         	@suffixes = Hash.new
-		@matches = Array.new
+			@matches.clear
+			@pattern = nil
+			@prev_max_position = 0
+			@prev_min_position = 0
         	File.delete(@file_suffix+FILE_SUFFIX_POS) unless !File.exists?(@file_suffix+FILE_SUFFIX_POS)
         end
     
@@ -305,26 +314,35 @@ module Cassiopee
             if(!use_store)
         		clear()
         	end
+			@prev_min_position = @min_position
+			@prev_max_position = @max_position
         	@min_position = min
         	@max_position = max
         end
         
         # Search exact match
         
-        def searchExact(pattern)
-		if(@useAmbiguity)
-		  return searchApproximate(pattern,0)
+        def searchExact(s)
+		
+		if(isSameSearch?(s))
+			return filterMatches
 		end
-        pattern = pattern.downcase
-        parseSuffixes(@sequence,pattern.length,pattern.length)
+		
+		if(@useAmbiguity)
+		  return searchApproximate(s,0)
+		end
+        s = s.downcase
+        parseSuffixes(@sequence,s.length,s.length)
         
-         @matches = Array.new
+         @matches.clear
          # Search required length, compare (compare md5?)
          # MD5 = 128 bits, easier to compare for large strings
-            matchsize = pattern.length
-            matchmd5 = Digest::MD5.hexdigest(pattern)
+            
+			@pattern = Digest::MD5.hexdigest(s)
+			matchsize = @pattern.length
+			
             @suffixes.each do |md5val,posArray|
-                if (md5val == matchmd5)
+                if (md5val == @pattern)
                     match = Array[md5val, 0, posArray]
 		    		$log.debug "Match: " << match.inspect
 		    		@matches << match
@@ -342,6 +360,11 @@ module Cassiopee
         
         
         def searchApproximate(s,edit)
+		
+			if(isSameSearch?(s))
+				return filterMatches
+			end
+		
         	if(edit==0 && !@useAmbiguity) 
         		return searchExact(s)
         	end
@@ -356,18 +379,20 @@ module Cassiopee
               minmatchsize = s.length - edit
               maxmatchsize = s.length + edit
             end
+			
+			s = s.downcase
             
             parseSuffixes(@sequence,minmatchsize,maxmatchsize)
             
-            matchmd5 = Digest::MD5.hexdigest(s)
+            @pattern = Digest::MD5.hexdigest(s)
             
-        	@matches = Array.new
+        	@matches.clear
         	
         	@suffixes.each do |md5val,posArray|
         		if(md5val == SUFFIXLEN)
         			next
         		end
-        		if (md5val == matchmd5)
+        		if (md5val == @pattern)
         			filteredPosArray = filter(posArray)
                     match = Array[md5val, 0, filteredPosArray]
 		    		$log.debug "Match: " << match.inspect
@@ -488,6 +513,32 @@ module Cassiopee
         end
         
         private
+		
+			# Check is current search is the same, or within a previous search
+			def isSameSearch?(s)
+				if(@pattern!=nil && @pattern == Digest::MD5.hexdigest(s))
+					if(@min_position>=@prev_min_position && @max_position <= @prev_max_position)
+						return true
+					end
+				end
+				return false
+			end
+			
+			# Filter matches to remove positions out of bounds from a previous search
+			
+			def filterMatches
+				newmatches = Array.new
+				@matches.each do |match|
+							filteredPosArray = filter(posArray)
+							if(filteredPosArray.length>1)
+								match = Array[match[0], match[1], filteredPosArray]
+								newmatches << match
+							end
+				
+				end
+				return newmatches
+			end
+		
         
         	# Parse input string
         	#

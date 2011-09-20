@@ -55,16 +55,16 @@ module CassiopeeMt
         end
         nb = len.div(maxthread)
         (1..maxthread).each do |i|
-          crawler = Crawler.new
-	  setParams(crawler,i)
-          curmax = min + nb
-          if(i==maxthread)
-             curmax = max
-          end
-          crawler.filter_position(min,curmax)
-	  $log.debug("Start new Thread between " << min.to_s << " and " << curmax.to_s)
-          @th[i-1] = Thread.new{ Thread.current["matches"] = crawler.searchExact(pattern) }
-          min = curmax + 1
+			crawler = Crawler.new
+			setParams(crawler,i)
+			curmax = min + nb
+			if(i==maxthread)
+				curmax = max
+			end
+			crawler.filter_position(min,curmax)
+			$log.debug("Start new Thread between " << min.to_s << " and " << curmax.to_s)
+			@th[i-1] = Thread.new{ Thread.current["matches"] = crawler.searchExact(pattern) }
+			min = curmax + 1
         end
         @th.each {|t| t.join; t["matches"].each { |m| @matches << m }}
         return @matches
