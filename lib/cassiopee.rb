@@ -73,7 +73,6 @@ module Cassiopee
     	
     	distance = Text::Levenshtein.distance(self, pattern)
     	
-   	
     	if(distance>edit)
     		return -1
     	end
@@ -123,7 +122,6 @@ module Cassiopee
 		if(x>edit)
 			return -1
 		end
-	
 		return x
   end
   
@@ -196,11 +194,12 @@ module Cassiopee
             @useAmbiguity = false
             @file_suffix = "crawler"
 			
-			@method = 1
+			@method = 0
 			
 			@prev_min_position = 0
 			@prev_max_position = 0
-            
+		
+			
             @suffix = nil
             @suffixmd5 = nil
             @position = 0
@@ -376,7 +375,6 @@ module Cassiopee
         
         
         def searchApproximate(s,edit)
-		
 			if(isSameSearch?(s))
 				return filterMatches
 			end
@@ -384,7 +382,7 @@ module Cassiopee
         	if(edit==0 && !@useAmbiguity) 
         		return searchExact(s)
         	end
-        
+			allowederrors = edit
         	if(edit>=0)
         	  useHamming = true
         	  minmatchsize = s.length
@@ -401,7 +399,7 @@ module Cassiopee
             @matches.clear
 			@pattern = Digest::MD5.hexdigest(s)
 			
-			parseSuffixes(@sequence,minmatchsize,maxmatchsize,edit,s)
+			parseSuffixes(@sequence,minmatchsize,maxmatchsize,allowederrors,s)
             
 			return @matches unless(method == METHOD_SUFFIX)
 			
@@ -521,6 +519,7 @@ module Cassiopee
         end
         
         private
+
 		
 			# check if md5 is equal to pattern
 			def isMatchEqual?(s)
@@ -545,13 +544,12 @@ module Cassiopee
 		    			    errors = s.computeHamming(pattern,edit)
 						  end
 		    			else
-						  if(@useAmbiguity && @ambigous!=nil)
+						  if(@useAmbiguity && @ambiguous!=nil)
 						    errors = s.computeLevenshteinAmbiguous(pattern,edit,@ambigous)
 						  else
 		    			    errors = s.computeLevenshtein(pattern,edit)
 						  end						
 		    			end
-				return errors
 			end
 		
 			# Check is current search is the same, or within a previous search
@@ -586,7 +584,7 @@ module Cassiopee
         	# * creates a suffix position file
         	
             def parseSuffixes(s,minlen,maxlen,edit=0,pat=nil)
-            
+            						
             # Controls
             if(minlen<=0) 
             	minlen = 1
@@ -659,9 +657,10 @@ module Cassiopee
 							prev_progress = progress
 							$log.debug("progress: " << progress.to_s)
 						end
-                    	#$log.debug("add "+@suffix+" at pos "+@position.to_s)
+					
 						if(method==METHOD_DIRECT)
-							if(edit==0)
+						
+							if(edit==0 && !@useAmbiguity)
 								if(isMatchEqual?(@suffixmd5))
 									errors = 0
 								else
@@ -671,16 +670,17 @@ module Cassiopee
 							
 							if(edit>=0)
 								useHamming = true
+								allowederrors = edit
 							else
 								useHamming = false
-								edit = edit * (-1)
+								allowederrors = edit * (-1)
 							end
-								errors = isApproximateEqual?(@suffix,pat,useHamming,edit)
+								errors = isApproximateEqual?(@suffix,pat,useHamming,allowederrors)
 							end
 							
 							
 							if(errors>=0)
-								match = Array[@suffixmd5, errors, Array.new(i,j)]
+								match = Array[@suffixmd5, errors, Array[i,j]]
 								$log.debug "Match: " << match.inspect
 								@matches << match
 							end

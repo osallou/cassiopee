@@ -9,13 +9,13 @@ class TestCrawler < Test::Unit::TestCase
  
   def test_exactsearch
     crawler = Cassiopee::Crawler.new
-    crawler.setLogLevel(Logger::ERROR)
+    crawler.setLogLevel(Logger::DEBUG)
     crawler.indexString('my sample example')
     matches = crawler.searchExact('ampl')
-    assert_equal(1,matches.length)
+    assert_equal(2,matches.length)
     # Minus 1, because first element is len of match
-    match = crawler.next()
-    assert_equal(2,match[2].length-1)
+    #match = crawler.next()
+    #assert_equal(2,match[2].length-1)
   end
 
   def test_ambiguous 
@@ -44,6 +44,15 @@ class TestCrawler < Test::Unit::TestCase
   def test_directmethod
     crawler = Cassiopee::Crawler.new
     crawler.method = Cassiopee::Crawler::METHOD_DIRECT
+    crawler.indexString('my sample example')
+    matches = crawler.searchApproximate('ebampl',1)
+    assert_equal(1,matches.length)
+  end
+
+
+  def test_suffixmethod
+    crawler = Cassiopee::Crawler.new
+    crawler.method = Cassiopee::Crawler::METHOD_SUFFIX
     crawler.indexString('my sample example')
     matches = crawler.searchApproximate('ebampl',1)
     assert_equal(1,matches.length)
