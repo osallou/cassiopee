@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>test_cache (TestCrawler)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File tests/test-suite.rb, line 69</span>
+  <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">test_cache</span>
+
+    <span class="ruby-identifier">crawler</span> = <span class="ruby-constant">Cassiopee</span><span class="ruby-operator">::</span><span class="ruby-constant">Crawler</span>.<span class="ruby-identifier">new</span>
+    <span class="ruby-identifier">crawler</span>.<span class="ruby-identifier">indexString</span>(<span class="ruby-value str">'my sample example'</span>)
+    <span class="ruby-identifier">matches</span> = <span class="ruby-identifier">crawler</span>.<span class="ruby-identifier">searchApproximate</span>(<span class="ruby-value str">'ebampl'</span>,<span class="ruby-value">-1</span>)
+
+    <span class="ruby-identifier">cache</span> = <span class="ruby-constant">Cassiopee</span><span class="ruby-operator">::</span><span class="ruby-constant">CrawlerCache</span>.<span class="ruby-identifier">new</span>
+    <span class="ruby-identifier">cache</span>.<span class="ruby-identifier">method</span> = <span class="ruby-value">2</span>
+    <span class="ruby-identifier">cache</span>.<span class="ruby-identifier">min_position</span> = <span class="ruby-value">0</span>
+    <span class="ruby-identifier">cache</span>.<span class="ruby-identifier">max_position</span> = <span class="ruby-value">0</span>
+    <span class="ruby-identifier">cache</span>.<span class="ruby-identifier">errors</span> = <span class="ruby-value">1</span>
+    <span class="ruby-identifier">cache</span>.<span class="ruby-identifier">saveCache</span>(<span class="ruby-identifier">matches</span>)
+
+    <span class="ruby-identifier">cache</span> = <span class="ruby-constant">Cassiopee</span><span class="ruby-operator">::</span><span class="ruby-constant">CrawlerCache</span>.<span class="ruby-identifier">new</span>
+    <span class="ruby-identifier">cache</span>.<span class="ruby-identifier">method</span> = <span class="ruby-value">2</span>
+    <span class="ruby-identifier">cache</span>.<span class="ruby-identifier">min_position</span> = <span class="ruby-value">0</span>
+    <span class="ruby-identifier">cache</span>.<span class="ruby-identifier">max_position</span> = <span class="ruby-value">0</span>
+    <span class="ruby-identifier">cache</span>.<span class="ruby-identifier">errors</span> = <span class="ruby-value">1</span>
+    <span class="ruby-identifier">cachematches</span> = <span class="ruby-identifier">cache</span>.<span class="ruby-identifier">loadCache</span>
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value">1</span>,<span class="ruby-identifier">cachematches</span>.<span class="ruby-identifier">length</span>)
+
+    <span class="ruby-identifier">cache</span> = <span class="ruby-constant">Cassiopee</span><span class="ruby-operator">::</span><span class="ruby-constant">CrawlerCache</span>.<span class="ruby-identifier">new</span>
+    <span class="ruby-identifier">cache</span>.<span class="ruby-identifier">method</span> = <span class="ruby-value">2</span>
+    <span class="ruby-identifier">cache</span>.<span class="ruby-identifier">min_position</span> = <span class="ruby-value">0</span>
+    <span class="ruby-identifier">cache</span>.<span class="ruby-identifier">max_position</span> = <span class="ruby-value">0</span>
+    <span class="ruby-identifier">cache</span>.<span class="ruby-identifier">errors</span> = <span class="ruby-value">2</span>
+    <span class="ruby-identifier">cachematches</span> = <span class="ruby-identifier">cache</span>.<span class="ruby-identifier">loadCache</span>
+    <span class="ruby-identifier">assert_equal</span>(<span class="ruby-value">0</span>,<span class="ruby-identifier">cachematches</span>.<span class="ruby-identifier">length</span>)
+
+  <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

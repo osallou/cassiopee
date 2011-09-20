@@ -5,29 +5,14 @@
 
 <html>
 <head>
-  <title>new (Cassiopee::Crawler)</title>
+  <title>setLogLevel (Cassiopee::Crawler)</title>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
 </head>
 <body class="standalone-code">
-  <pre><span class="ruby-comment cmt"># File lib/cassiopee.rb, line 184</span>
-        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>
-            <span class="ruby-ivar">@useAmbiguity</span> = <span class="ruby-keyword kw">false</span>
-            <span class="ruby-ivar">@file_suffix</span> = <span class="ruby-value str">&quot;crawler&quot;</span>
-            
-            <span class="ruby-ivar">@suffix</span> = <span class="ruby-keyword kw">nil</span>
-            <span class="ruby-ivar">@suffixmd5</span> = <span class="ruby-keyword kw">nil</span>
-            <span class="ruby-ivar">@position</span> = <span class="ruby-value">0</span>
-            
-            <span class="ruby-ivar">@suffixes</span> = <span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span>
-            
-            <span class="ruby-ivar">@matches</span> = <span class="ruby-keyword kw">nil</span>
-            <span class="ruby-ivar">@curmatch</span> = <span class="ruby-value">0</span>
-            <span class="ruby-ivar">@use_store</span> = <span class="ruby-keyword kw">false</span>
-            
-            <span class="ruby-ivar">@sequence</span> = <span class="ruby-keyword kw">nil</span>
-                        
-                        <span class="ruby-ivar">@comments</span> = <span class="ruby-constant">Array</span>[<span class="ruby-value str">&quot;#&quot;</span>]
+  <pre><span class="ruby-comment cmt"># File lib/cassiopee.rb, line 351</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">setLogLevel</span>(<span class="ruby-identifier">level</span>)
+            <span class="ruby-identifier">$log</span>.<span class="ruby-identifier">level</span> = <span class="ruby-identifier">level</span>
         <span class="ruby-keyword kw">end</span></pre>
 </body>
 </html>

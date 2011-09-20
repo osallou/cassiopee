@@ -180,7 +180,7 @@ module Cassiopee
 	
 		# Loads cache from file
 		def loadCache
-            	return nil unless File.exists?(@file_suffix+FILE_CACHE_EXT)
+            	return Array.new unless File.exists?(@file_suffix+FILE_CACHE_EXT)
                 begin
                   file = Zlib::GzipReader.open(@file_suffix+FILE_CACHE_EXT)
                 rescue Zlib::GzipFile::Error
@@ -258,6 +258,9 @@ module Cassiopee
     attr_accessor  :use_store
 	# Array of comment characters to skip lines in input sequence file
 	attr_accessor  :comments
+	
+	# Manage basic cache to store previous match
+	attr_accessor  :useCache 
     
 	# Method for search FORCE or SUFFIX
 	# * SUFFIX loads all suffixes and search through them afterwards, interesting for multiple searches (suffixes are reused)
@@ -287,12 +290,15 @@ module Cassiopee
 
     $maxthread = 1
 	
+	@cache = nil
+	
     
     $log = Logger.new(STDOUT)
     $log.level = Logger::INFO
     
         def initialize
             @useAmbiguity = false
+			@useCache = false
             @file_suffix = "crawler"
 			
 			@method = 0
@@ -314,6 +320,9 @@ module Cassiopee
             @sequence = nil
 			
 			@comments = Array["#"]
+			
+			@cache = Cassiopee::CrawlerCache.new
+
         end
 		
 		def filterLength
@@ -333,6 +342,7 @@ module Cassiopee
 			@pattern = nil
 			@prev_max_position = 0
 			@prev_min_position = 0
+			@cache.clearCache()
         	File.delete(@file_suffix+FILE_SUFFIX_POS) unless !File.exists?(@file_suffix+FILE_SUFFIX_POS)
         end
     
@@ -438,9 +448,18 @@ module Cassiopee
 		if(@useAmbiguity)
 		  return searchApproximate(s,0)
 		end
+		
         s = s.downcase
         
-		@matches.clear
+		updateCache(0,0)
+		@matches = @cache.loadCache()
+		
+		if(@matches.length>0)
+			return cache?(@matches)
+		end
+		
+		#@matches.clear
+		
 		@pattern = Digest::MD5.hexdigest(s)
 		
 		parseSuffixes(@sequence,s.length,s.length,0,s)
@@ -460,7 +479,7 @@ module Cassiopee
 		    		@matches << match
                 end
             end
-        return @matches 
+        return cache?(@matches) 
         
         end
         
@@ -481,21 +500,30 @@ module Cassiopee
         	  useHamming = true
         	  minmatchsize = s.length
         	  maxmatchsize = s.length
+			  updateCache(1,edit)
+			  @matches = @cache.loadCache()
         	else
         	  useHamming = false
         	  edit = edit * (-1)
               minmatchsize = s.length - edit
               maxmatchsize = s.length + edit
+			  updateCache(2,edit)
+			  @matches = @cache.loadCache()
             end
+			
+			if(@matches.length>0)
+				return @matches
+			end
 			
 			s = s.downcase
             
-            @matches.clear
+			
+            #@matches.clear
 			@pattern = Digest::MD5.hexdigest(s)
 			
 			parseSuffixes(@sequence,minmatchsize,maxmatchsize,allowederrors,s)
             
-			return @matches unless(method == METHOD_SUFFIX)
+			return cache?(@matches) unless(method == METHOD_SUFFIX)
 			
  
             
@@ -526,7 +554,7 @@ module Cassiopee
         	
         	end
         	
-        	return @matches 
+        	return cache?(@matches) 
         end
         
         # Filter the array of positions with defined position filter
@@ -613,6 +641,24 @@ module Cassiopee
         end
         
         private
+		
+			# If cache is used, store results for later retrieval, else return matches directly
+			def cache?(results)
+				if(@useCache)
+					@cache.saveCache(results)
+				end
+				
+				return results
+			end
+		
+			# Update cache object with current object parameters
+			def updateCache(method,errors)
+				@cache.file_suffix = @file_suffix
+				@cache.min_position = @min_position
+				@cache.max_position = @max_position
+				@cache.method = method
+				@cache.errors = errors
+			end
 
 		
 			# check if md5 is equal to pattern
