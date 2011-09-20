@@ -161,6 +161,14 @@ module Cassiopee
 	# Array of comment characters to skip lines in input sequence file
 	attr_accessor  :comments
     
+	# Method for search FORCE or SUFFIX
+	# * SUFFIX loads all suffixes and search through them afterwards, interesting for multiple searches (suffixes are reused)
+	# * FORCE checks matches while crossing the suffixes. Does not keep parsed data for later search
+	attr_accessor	:method
+	
+	METHOD_DIRECT = 0
+	METHOD_SUFFIX = 1
+	
     @min_position = 0
     @max_position = 0
 	
@@ -187,6 +195,8 @@ module Cassiopee
         def initialize
             @useAmbiguity = false
             @file_suffix = "crawler"
+			
+			@method = 1
 			
 			@prev_min_position = 0
 			@prev_max_position = 0
@@ -332,9 +342,13 @@ module Cassiopee
 		  return searchApproximate(s,0)
 		end
         s = s.downcase
-        parseSuffixes(@sequence,s.length,s.length)
         
-         @matches.clear
+		@matches.clear
+		
+		parseSuffixes(@sequence,s.length,s.length,0,s)
+        
+		return @matches unless(method == METHOD_SUFFIX)
+		
          # Search required length, compare (compare md5?)
          # MD5 = 128 bits, easier to compare for large strings
             
@@ -342,7 +356,7 @@ module Cassiopee
 			matchsize = @pattern.length
 			
             @suffixes.each do |md5val,posArray|
-                if (md5val == @pattern)
+                if (isMatchEqual?(md5val))
                     match = Array[md5val, 0, posArray]
 		    		$log.debug "Match: " << match.inspect
 		    		@matches << match
@@ -382,12 +396,15 @@ module Cassiopee
 			
 			s = s.downcase
             
-            parseSuffixes(@sequence,minmatchsize,maxmatchsize)
+            @matches.clear
+			
+			parseSuffixes(@sequence,minmatchsize,maxmatchsize,edit,s)
             
+			return @matches unless(method == METHOD_SUFFIX)
+			
             @pattern = Digest::MD5.hexdigest(s)
             
-        	@matches.clear
-        	
+        	      	
         	@suffixes.each do |md5val,posArray|
         		if(md5val == SUFFIXLEN)
         			next
@@ -401,20 +418,8 @@ module Cassiopee
 		    		if(posArray[0]>= minmatchsize && posArray[0] <= maxmatchsize)
 		    			# Get string
 		    			seq = extractSuffix(posArray[1],posArray[0])
-		    			seq.extend(Cassiopee)
-		    			if(useHamming)
-						  if(@useAmbiguity && @ambiguous!=nil)
-						    errors = seq.computeHammingAmbiguous(s,edit,@ambiguous)
-						  else
-		    			    errors = seq.computeHamming(s,edit)
-						  end
-		    			else
-						  if(@useAmbiguity && @ambigous!=nil)
-						    errors = seq.computeLevenshteinAmbiguous(s,edit,@ambigous)
-						  else
-		    			    errors = seq.computeLevenshtein(s,edit)
-						  end						
-		    			end
+						errors = isApproximateEqual?(seq,s,useHamming,edit)
+						
 		    			if(errors>=0)
 		    				filteredPosArray = filter(posArray)
 		    			    match = Array[md5val, errors, filteredPosArray]
@@ -514,6 +519,38 @@ module Cassiopee
         
         private
 		
+			# check if md5 is equal to pattern
+			def isMatchEqual?(s)
+				if(@pattern == s)
+					return true
+				end
+				return false
+			end
+			
+			# check if string is approximatly equal to pattern
+			# s: string to compare
+			# pattern: base pattern used
+			# useHamming: use Hamming or edit distance
+			# edit : allowed errors
+			def isApproximateEqual?(s,pattern,useHamming,edit)
+				errors = -1
+						s.extend(Cassiopee)
+		    			if(useHamming)
+						  if(@useAmbiguity && @ambiguous!=nil)
+						    errors = s.computeHammingAmbiguous(pattern,edit,@ambiguous)
+						  else
+		    			    errors = s.computeHamming(pattern,edit)
+						  end
+		    			else
+						  if(@useAmbiguity && @ambigous!=nil)
+						    errors = s.computeLevenshteinAmbiguous(pattern,edit,@ambigous)
+						  else
+		    			    errors = s.computeLevenshtein(pattern,edit)
+						  end						
+		    			end
+				return errors
+			end
+		
 			# Check is current search is the same, or within a previous search
 			def isSameSearch?(s)
 				if(@pattern!=nil && @pattern == Digest::MD5.hexdigest(s))
@@ -545,7 +582,7 @@ module Cassiopee
         	# * creates a suffix file
         	# * creates a suffix position file
         	
-            def parseSuffixes(s,minlen,maxlen)
+            def parseSuffixes(s,minlen,maxlen,edit=0,pat=nil)
             
             # Controls
             if(minlen<=0) 
@@ -605,6 +642,7 @@ module Cassiopee
                 		next
                 	end
                 	changed = true
+					prev_progress = -1
                		 (minpos..(maxpos)).each do |j|
                		 	# if position+length longer than sequence length, skip it
                		 	if(j+i>=@sequence.length)
@@ -614,13 +652,43 @@ module Cassiopee
                     	@suffixmd5 = Digest::MD5.hexdigest(@suffix)
                     	@position = j
 						progress = (@position * 100).div(@sequence.length)
-						if((progress % 10) == 0)
+						if((progress % 10) == 0 && progress > prev_progress)
+							prev_progress = progress
 							$log.debug("progress: " << progress.to_s)
 						end
                     	#$log.debug("add "+@suffix+" at pos "+@position.to_s)
-                    	nbSuffix += addSuffix(@suffixmd5, @position,i)
+						if(method==METHOD_DIRECT)
+							if(edit==0)
+								if(isMatchEqual?(@suffixmd5))
+									errors = 0
+								else
+									errors = -1
+								end
+							else
+							
+							if(edit>=0)
+								useHamming = true
+							else
+								useHamming = false
+								edit = edit * (-1)
+							end
+								errors = isApproximateEqual?(@suffix,pat,useHamming,edit)
+							end
+							
+							
+							if(errors>=0)
+								match = Array[@suffixmd5, errors, Array.new(i,j)]
+								$log.debug "Match: " << match.inspect
+								@matches << match
+							end
+							
+							
+							
+						else
+                    	  nbSuffix += addSuffix(@suffixmd5, @position,i)
+						end
                     end
-                    $log.debug("Nb suffix found: " << nbSuffix.to_s << ' for length ' << i.to_s)
+                    $log.debug("Nb suffix found: " << nbSuffix.to_s << ' for length ' << i.to_s) unless method==METHOD_DIRECT
                 end
             
                 

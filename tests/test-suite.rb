@@ -41,6 +41,14 @@ class TestCrawler < Test::Unit::TestCase
     assert_equal(1,matches.length)
   end
 
+  def test_directmethod
+    crawler = Cassiopee::Crawler.new
+    crawler.method = Cassiopee::Crawler::METHOD_DIRECT
+    crawler.indexString('my sample example')
+    matches = crawler.searchApproximate('ebampl',1)
+    assert_equal(1,matches.length)
+  end
+
   def  test_multithreadsearch
     crawler = CassiopeeMt::CrawlerMt.new
     crawler.maxthread=3

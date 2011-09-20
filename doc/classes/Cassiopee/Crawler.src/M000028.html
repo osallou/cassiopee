@@ -5,24 +5,30 @@
 
 <html>
 <head>
-  <title>extractSuffix (Cassiopee::Crawler)</title>
+  <title>filter (Cassiopee::Crawler)</title>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
 </head>
 <body class="standalone-code">
-  <pre><span class="ruby-comment cmt"># File lib/cassiopee.rb, line 432</span>
-        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">extractSuffix</span>(<span class="ruby-identifier">start</span>,<span class="ruby-identifier">len</span>)
-                <span class="ruby-identifier">sequence</span> = <span class="ruby-value str">''</span>
-                <span class="ruby-keyword kw">begin</span>
-                        <span class="ruby-identifier">file</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">new</span>(<span class="ruby-ivar">@file_suffix</span><span class="ruby-operator">+</span><span class="ruby-constant">FILE_SUFFIX_EXT</span>, <span class="ruby-value str">&quot;r&quot;</span>)
-                              <span class="ruby-identifier">file</span>.<span class="ruby-identifier">pos</span> = <span class="ruby-identifier">start</span>
-                                        <span class="ruby-identifier">sequence</span> = <span class="ruby-identifier">file</span>.<span class="ruby-identifier">read</span>(<span class="ruby-identifier">len</span>)
-                        <span class="ruby-identifier">file</span>.<span class="ruby-identifier">close</span>
-                <span class="ruby-keyword kw">rescue</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">err</span>
-                        <span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;Exception: #{err}&quot;</span>
-                        <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">nil</span>
+  <pre><span class="ruby-comment cmt"># File lib/cassiopee.rb, line 439</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">filter</span>(<span class="ruby-identifier">posArray</span>)
+                <span class="ruby-identifier">$log</span>.<span class="ruby-identifier">debug</span>(<span class="ruby-value str">&quot;filter the position with &quot;</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-ivar">@min_position</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot; and &quot;</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-ivar">@max_position</span>.<span class="ruby-identifier">to_s</span>)
+                <span class="ruby-keyword kw">if</span>(<span class="ruby-ivar">@min_position</span><span class="ruby-operator">==</span><span class="ruby-value">0</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-ivar">@max_position</span><span class="ruby-operator">==</span><span class="ruby-value">0</span>)
+                        <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">posArray</span>
                 <span class="ruby-keyword kw">end</span>
-                <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">sequence</span>
+                <span class="ruby-identifier">filteredArray</span> = <span class="ruby-constant">Array</span>.<span class="ruby-identifier">new</span>
+                <span class="ruby-identifier">i</span> = <span class="ruby-value">0</span>
+                <span class="ruby-identifier">posArray</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">pos</span><span class="ruby-operator">|</span>
+                        <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">i</span><span class="ruby-operator">==</span><span class="ruby-value">0</span>)
+                                <span class="ruby-comment cmt"># First elt of array is match length</span>
+                                <span class="ruby-identifier">filteredArray</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">pos</span>
+                        <span class="ruby-keyword kw">end</span>
+                        <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">i</span><span class="ruby-operator">&gt;</span><span class="ruby-value">0</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">pos</span><span class="ruby-operator">&gt;=</span><span class="ruby-ivar">@min_position</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">pos</span><span class="ruby-operator">&lt;=</span><span class="ruby-ivar">@max_position</span>)
+                                <span class="ruby-identifier">filteredArray</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">pos</span>
+                        <span class="ruby-keyword kw">end</span>
+                        <span class="ruby-identifier">i</span> <span class="ruby-operator">+=</span><span class="ruby-value">1</span>
+                <span class="ruby-keyword kw">end</span>
+                <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">filteredArray</span>
         <span class="ruby-keyword kw">end</span></pre>
 </body>
 </html>

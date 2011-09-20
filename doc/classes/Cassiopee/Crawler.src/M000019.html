@@ -5,14 +5,19 @@
 
 <html>
 <head>
-  <title>setLogLevel (Cassiopee::Crawler)</title>
+  <title>clear (Cassiopee::Crawler)</title>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
 </head>
 <body class="standalone-code">
-  <pre><span class="ruby-comment cmt"># File lib/cassiopee.rb, line 222</span>
-        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">setLogLevel</span>(<span class="ruby-identifier">level</span>)
-            <span class="ruby-identifier">$log</span>.<span class="ruby-identifier">level</span> = <span class="ruby-identifier">level</span>
+  <pre><span class="ruby-comment cmt"># File lib/cassiopee.rb, line 230</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">clear</span>
+                <span class="ruby-ivar">@suffixes</span> = <span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span>
+                        <span class="ruby-ivar">@matches</span>.<span class="ruby-identifier">clear</span>
+                        <span class="ruby-ivar">@pattern</span> = <span class="ruby-keyword kw">nil</span>
+                        <span class="ruby-ivar">@prev_max_position</span> = <span class="ruby-value">0</span>
+                        <span class="ruby-ivar">@prev_min_position</span> = <span class="ruby-value">0</span>
+                <span class="ruby-constant">File</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-ivar">@file_suffix</span><span class="ruby-operator">+</span><span class="ruby-constant">FILE_SUFFIX_POS</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-operator">!</span><span class="ruby-constant">File</span>.<span class="ruby-identifier">exists?</span>(<span class="ruby-ivar">@file_suffix</span><span class="ruby-operator">+</span><span class="ruby-constant">FILE_SUFFIX_POS</span>)
         <span class="ruby-keyword kw">end</span></pre>
 </body>
 </html>

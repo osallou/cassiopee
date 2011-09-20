@@ -5,24 +5,18 @@
 
 <html>
 <head>
-  <title>computeHammingAmbiguous (Cassiopee)</title>
+  <title>computeAmbiguousDistance (Cassiopee)</title>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <link rel="stylesheet" href="../.././rdoc-style.css" type="text/css" media="screen" />
 </head>
 <body class="standalone-code">
-  <pre><span class="ruby-comment cmt"># File lib/cassiopee.rb, line 36</span>
-    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">computeHammingAmbiguous</span>(<span class="ruby-identifier">pattern</span>,<span class="ruby-identifier">hamming</span>,<span class="ruby-identifier">ambiguous</span>)
-        <span class="ruby-identifier">pattern</span> = <span class="ruby-identifier">pattern</span>.<span class="ruby-identifier">downcase</span>
-        <span class="ruby-identifier">nberr</span> = <span class="ruby-value">0</span>
-        (<span class="ruby-value">0</span><span class="ruby-operator">..</span>(<span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">length</span><span class="ruby-operator">-</span><span class="ruby-value">1</span>)).<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">c</span><span class="ruby-operator">|</span>
-                <span class="ruby-keyword kw">if</span>(<span class="ruby-operator">!</span><span class="ruby-identifier">isAmbiguousEqual</span>(<span class="ruby-identifier">pattern</span>[<span class="ruby-identifier">c</span>],<span class="ruby-keyword kw">self</span>[<span class="ruby-identifier">c</span>],<span class="ruby-identifier">ambiguous</span>))
-                        <span class="ruby-identifier">nberr</span> = <span class="ruby-identifier">nberr</span><span class="ruby-operator">+</span><span class="ruby-value">1</span>
-                        <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">nberr</span><span class="ruby-operator">&gt;</span><span class="ruby-identifier">hamming</span>.<span class="ruby-identifier">to_i</span>)
-                                <span class="ruby-keyword kw">return</span> <span class="ruby-value">-1</span>               
-                        <span class="ruby-keyword kw">end</span>
-                <span class="ruby-keyword kw">end</span>
-        <span class="ruby-keyword kw">end</span>
-        <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">nberr</span>
+  <pre><span class="ruby-comment cmt"># File lib/cassiopee.rb, line 26</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">computeAmbiguousDistance</span>(<span class="ruby-identifier">pattern</span>,<span class="ruby-identifier">hamming</span>,<span class="ruby-identifier">edit</span>,<span class="ruby-identifier">ambiguous</span>)
+      <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">edit</span><span class="ruby-operator">==</span><span class="ruby-value">0</span>)
+        <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">computeHammingAmbiguous</span>(<span class="ruby-identifier">pattern</span>,<span class="ruby-identifier">hamming</span>,<span class="ruby-identifier">ambiguous</span>)
+      <span class="ruby-keyword kw">else</span>
+       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">computeLevenshteinAmbiguous</span>(<span class="ruby-identifier">pattern</span>,<span class="ruby-identifier">edit</span>,<span class="ruby-identifier">ambiguous</span>)
+      <span class="ruby-keyword kw">end</span>
     <span class="ruby-keyword kw">end</span></pre>
 </body>
 </html>
