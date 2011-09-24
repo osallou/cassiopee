@@ -35,6 +35,10 @@ module CassiopeeMt
       crawler.file_suffix = @file_suffix
       crawler.loadIndex()
 	  crawler.method = method
+      crawler.comments = comments
+      crawler.useAmbiguity = useAmbiguity
+      crawler.ambiguous = ambiguous
+      crawler.usrCache = useCache
       #crawler.file_suffix = @file_suffix+"."+threadId.to_s
     end
 

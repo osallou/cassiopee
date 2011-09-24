@@ -1,3 +1,4 @@
+v0.1.6: Fix ambiguity and cache support in CassiopeeMT
 v0.1.5 : add CrawlerCache for basic cache management (previous result only), several fixes
 v0.1.4 : fix 0.1.3 error on index load, add filter_position management in mt
 v0.1.3 : 09/11 Olivier Sallou
