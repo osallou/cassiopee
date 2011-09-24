@@ -137,7 +137,7 @@ module Cassiopee
 	    return false
 	  end
 	end
-	if(ambiguous[a.chr].index(b.chr)!=nil || ambiguous[b.chr].index(a.chr)!=nil || a==b)
+	if(a==b || (ambiguous[a.chr]!=nil && ambiguous[a.chr].index(b.chr)!=nil) || (ambiguous[b.chr]!=nil && ambiguous[b.chr].index(a.chr)!=nil))
 	   return true
     else
 	   return false
