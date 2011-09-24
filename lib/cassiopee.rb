@@ -261,6 +261,9 @@ module Cassiopee
 	
 	# Manage basic cache to store previous match
 	attr_accessor  :useCache 
+
+    # Ambiguity map (Hash)
+    attr_accessor :ambiguous
     
 	# Method for search FORCE or SUFFIX
 	# * SUFFIX loads all suffixes and search through them afterwards, interesting for multiple searches (suffixes are reused)
@@ -278,7 +281,6 @@ module Cassiopee
 	@prev_min_position = 0
 	@prev_max_position = 0
 	
-	@ambiguous = nil
 	
 	@pattern = nil
 	
@@ -298,6 +300,7 @@ module Cassiopee
     
         def initialize
             @useAmbiguity = false
+            @ambiguous = nil
 			@useCache = false
             @file_suffix = "crawler"
 			

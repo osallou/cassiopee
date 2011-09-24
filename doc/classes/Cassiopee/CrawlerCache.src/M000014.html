@@ -5,14 +5,14 @@
 
 <html>
 <head>
-  <title>setLogger (Cassiopee::CrawlerCache)</title>
+  <title>clearCache (Cassiopee::CrawlerCache)</title>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
 </head>
 <body class="standalone-code">
-  <pre><span class="ruby-comment cmt"># File lib/cassiopee.rb, line 173</span>
-                <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">setLogger</span>(<span class="ruby-identifier">userlogger</span>)
-                        <span class="ruby-identifier">$log</span> = <span class="ruby-identifier">userlogger</span>
+  <pre><span class="ruby-comment cmt"># File lib/cassiopee.rb, line 208</span>
+                <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">clearCache</span>
+                        <span class="ruby-constant">File</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-ivar">@file_suffix</span><span class="ruby-operator">+</span><span class="ruby-constant">FILE_CACHE_EXT</span>) <span class="ruby-keyword kw">unless</span> <span class="ruby-operator">!</span><span class="ruby-constant">File</span>.<span class="ruby-identifier">exists?</span>(<span class="ruby-ivar">@file_suffix</span><span class="ruby-operator">+</span><span class="ruby-constant">FILE_CACHE_EXT</span>)
                 <span class="ruby-keyword kw">end</span></pre>
 </body>
 </html>
