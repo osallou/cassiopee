@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 $:.unshift '../lib'
 require 'cassiopee'
 require 'logger'
