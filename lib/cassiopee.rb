@@ -1,7 +1,6 @@
 require 'digest/md5'
 require 'logger'
 require 'zlib'
-require 'rubygems'
 require 'text'
 require 'text/util'
 

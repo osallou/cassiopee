@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name = %q{cassiopee}
-  s.version = "0.1.7"
-  s.date = %q{2011-09-24}
+  s.version = "0.1.8"
+  s.date = %q{2011-10-03}
   s.authors = ["Olivier Sallou"]
   s.email = %q{olivier.sallou@gmail.com}
   s.summary = %q{Cassiopee index strings and provide exact or approximate search.}

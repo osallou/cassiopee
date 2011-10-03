@@ -1,9 +1,6 @@
 require 'digest/md5'
 require 'logger'
 require 'zlib'
-#require 'rubygems'
-#require 'text'
-#require 'text/util'
 require File.join(File.dirname(__FILE__), 'cassiopee')
 
 include Cassiopee

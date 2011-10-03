@@ -1,6 +1,8 @@
-require File.join(File.dirname(__FILE__), '../lib/cassiopee')
-require File.join(File.dirname(__FILE__), '../lib/cassiopee-mt')
-require 'rubygems'
+$:.unshift '../lib'
+require 'cassiopee'
+require 'cassiopee-mt'
+#require File.join(File.dirname(__FILE__), '../lib/cassiopee')
+#require File.join(File.dirname(__FILE__), '../lib/cassiopee-mt')
 require 'logger'
 require 'test/unit'
 

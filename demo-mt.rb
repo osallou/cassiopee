@@ -1,5 +1,4 @@
 require File.join(File.dirname(__FILE__), 'lib/cassiopee-mt')
-require 'rubygems'
 require 'logger'
 
 # Instanciate a new crawler

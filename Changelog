@@ -1,3 +1,4 @@
+v0.1.8/ remove rubygems dependency in code.
 v0.1.7: Fix in ambiguity management
 v0.1.6: Fix ambiguity and cache support in CassiopeeMT
 v0.1.5 : add CrawlerCache for basic cache management (previous result only), several fixes
