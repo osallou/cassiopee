@@ -5,14 +5,14 @@
 
 <html>
 <head>
-  <title>to_s (Cassiopee::Crawler)</title>
+  <title>setLogLevel (Cassiopee::Crawler)</title>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
 </head>
 <body class="standalone-code">
-  <pre><span class="ruby-comment cmt"># File lib/cassiopee.rb, line 642</span>
-        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">to_s</span>
-                <span class="ruby-identifier">puts</span> <span class="ruby-value str">'{ matches: &quot;'</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-ivar">@matches</span>.<span class="ruby-identifier">length</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">'&quot; }'</span>
+  <pre><span class="ruby-comment cmt"># File lib/cassiopee.rb, line 353</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">setLogLevel</span>(<span class="ruby-identifier">level</span>)
+            <span class="ruby-identifier">$log</span>.<span class="ruby-identifier">level</span> = <span class="ruby-identifier">level</span>
         <span class="ruby-keyword kw">end</span></pre>
 </body>
 </html>

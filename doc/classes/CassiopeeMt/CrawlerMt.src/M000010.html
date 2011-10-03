@@ -5,43 +5,22 @@
 
 <html>
 <head>
-  <title>searchExact (CassiopeeMt::CrawlerMt)</title>
+  <title>setParams (CassiopeeMt::CrawlerMt)</title>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
 </head>
 <body class="standalone-code">
-  <pre><span class="ruby-comment cmt"># File lib/cassiopee-mt.rb, line 41</span>
-   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">searchExact</span>(<span class="ruby-identifier">pattern</span>)
-        <span class="ruby-identifier">len</span> = <span class="ruby-ivar">@sequence</span>.<span class="ruby-identifier">length</span>
-        <span class="ruby-keyword kw">if</span>(<span class="ruby-ivar">@min_position</span><span class="ruby-operator">&gt;</span><span class="ruby-value">0</span>)
-          <span class="ruby-identifier">min</span> = <span class="ruby-ivar">@min_position</span>
-         <span class="ruby-keyword kw">else</span>
-          <span class="ruby-identifier">min</span> = <span class="ruby-value">0</span>  
-        <span class="ruby-keyword kw">end</span>
-         <span class="ruby-keyword kw">if</span>(<span class="ruby-ivar">@max_position</span><span class="ruby-operator">&gt;</span><span class="ruby-value">0</span>)
-           <span class="ruby-identifier">max</span> = <span class="ruby-ivar">@max_position</span>
-         <span class="ruby-keyword kw">else</span>
-           <span class="ruby-identifier">max</span>= <span class="ruby-ivar">@sequence</span>.<span class="ruby-identifier">length</span>
-        <span class="ruby-keyword kw">end</span>
-        <span class="ruby-identifier">len</span> = <span class="ruby-identifier">max</span> <span class="ruby-operator">-</span> <span class="ruby-identifier">min</span> 
-        <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">len</span><span class="ruby-operator">&lt;</span><span class="ruby-constant">MINSEQSIZE</span>)
-              <span class="ruby-ivar">@maxthread</span>=<span class="ruby-value">1</span>
-        <span class="ruby-keyword kw">end</span>
-        <span class="ruby-identifier">nb</span> = <span class="ruby-identifier">len</span>.<span class="ruby-identifier">div</span>(<span class="ruby-identifier">maxthread</span>)
-        (<span class="ruby-value">1</span><span class="ruby-operator">..</span><span class="ruby-identifier">maxthread</span>).<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">i</span><span class="ruby-operator">|</span>
-                        <span class="ruby-identifier">crawler</span> = <span class="ruby-constant">Crawler</span>.<span class="ruby-identifier">new</span>
-                        <span class="ruby-identifier">setParams</span>(<span class="ruby-identifier">crawler</span>,<span class="ruby-identifier">i</span>)
-                        <span class="ruby-identifier">curmax</span> = <span class="ruby-identifier">min</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">nb</span>
-                        <span class="ruby-keyword kw">if</span>(<span class="ruby-identifier">i</span><span class="ruby-operator">==</span><span class="ruby-identifier">maxthread</span>)
-                                <span class="ruby-identifier">curmax</span> = <span class="ruby-identifier">max</span>
-                        <span class="ruby-keyword kw">end</span>
-                        <span class="ruby-identifier">crawler</span>.<span class="ruby-identifier">filter_position</span>(<span class="ruby-identifier">min</span>,<span class="ruby-identifier">curmax</span>)
-                        <span class="ruby-identifier">$log</span>.<span class="ruby-identifier">debug</span>(<span class="ruby-value str">&quot;Start new Thread between &quot;</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">min</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">&quot; and &quot;</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">curmax</span>.<span class="ruby-identifier">to_s</span>)
-                        <span class="ruby-ivar">@th</span>[<span class="ruby-identifier">i</span><span class="ruby-operator">-</span><span class="ruby-value">1</span>] = <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">new</span>{ <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>[<span class="ruby-value str">&quot;matches&quot;</span>] = <span class="ruby-identifier">crawler</span>.<span class="ruby-identifier">searchExact</span>(<span class="ruby-identifier">pattern</span>) }
-                        <span class="ruby-identifier">min</span> = <span class="ruby-identifier">curmax</span> <span class="ruby-operator">+</span> <span class="ruby-value">1</span>
-        <span class="ruby-keyword kw">end</span>
-        <span class="ruby-ivar">@th</span>.<span class="ruby-identifier">each</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">t</span><span class="ruby-operator">|</span> <span class="ruby-identifier">t</span>.<span class="ruby-identifier">join</span>; <span class="ruby-identifier">t</span>[<span class="ruby-value str">&quot;matches&quot;</span>].<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">m</span><span class="ruby-operator">|</span> <span class="ruby-ivar">@matches</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">m</span> }}
-        <span class="ruby-keyword kw">return</span> <span class="ruby-ivar">@matches</span>
-   <span class="ruby-keyword kw">end</span></pre>
+  <pre><span class="ruby-comment cmt"># File lib/cassiopee-mt.rb, line 30</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">setParams</span>(<span class="ruby-identifier">crawler</span>,<span class="ruby-identifier">threadId</span>)
+      <span class="ruby-identifier">crawler</span>.<span class="ruby-identifier">setLogLevel</span>(<span class="ruby-identifier">$log</span>.<span class="ruby-identifier">level</span>)
+      <span class="ruby-identifier">crawler</span>.<span class="ruby-identifier">file_suffix</span> = <span class="ruby-ivar">@file_suffix</span>
+      <span class="ruby-identifier">crawler</span>.<span class="ruby-identifier">loadIndex</span>()
+          <span class="ruby-identifier">crawler</span>.<span class="ruby-identifier">method</span> = <span class="ruby-ivar">@method</span>
+      <span class="ruby-identifier">crawler</span>.<span class="ruby-identifier">comments</span> = <span class="ruby-ivar">@comments</span>
+      <span class="ruby-identifier">crawler</span>.<span class="ruby-identifier">useAmbiguity</span> = <span class="ruby-ivar">@useAmbiguity</span>
+      <span class="ruby-identifier">crawler</span>.<span class="ruby-identifier">ambiguous</span> = <span class="ruby-ivar">@ambiguous</span>
+      <span class="ruby-identifier">crawler</span>.<span class="ruby-identifier">useCache</span> = <span class="ruby-ivar">@useCache</span>
+      <span class="ruby-comment cmt">#crawler.file_suffix = @file_suffix+&quot;.&quot;+threadId.to_s</span>
+    <span class="ruby-keyword kw">end</span></pre>
 </body>
 </html>
