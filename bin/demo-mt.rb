@@ -1,4 +1,5 @@
-require File.join(File.dirname(__FILE__), 'lib/cassiopee-mt')
+$:.unshift '../lib'
+require 'cassiopee-mt'
 require 'logger'
 
 # Instanciate a new crawler
