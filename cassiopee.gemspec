@@ -9,7 +9,6 @@ Gem::Specification.new do |s|
   s.description = %q{Cassiopee index one String and provide methods to search exact match or approximate matches with Hammming and/or edit distance.}
   s.files = [ "README", "Changelog", "LICENSE", "demo.rb", "demo-mt.rb" , "lib/cassiopee.rb", "lib/cassiopee-mt.rb", "bin/cassie.rb", "tests/test-suite.rb", "tests/amb.map"]
   s.has_rdoc = true
-  s.rdoc_options << '--main lib/cassiopee.rb'
   s.license = 'LGPL-3'
   s.test_file = 'tests/test-suite.rb'
   s.add_dependency('text', '>= 0.2.0')
