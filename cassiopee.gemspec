@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.summary = %q{Cassiopee index strings and provide exact or approximate search.}
   s.homepage = %q{https://github.com/osallou/cassiopee}
   s.description = %q{Cassiopee index one String and provide methods to search exact match or approximate matches with Hammming and/or edit distance.}
-  s.files = [ "README", "Changelog", "LICENSE", "demo.rb", "demo-mt.rb" , "lib/cassiopee.rb", "lib/cassiopee-mt.rb", "bin/cassie.rb", "tests/test-suite.rb", "tests/amb.map"]
+  s.files = [ "README", "Changelog", "LICENSE", "bin/demo.rb", "bin/demo-mt.rb" , "lib/cassiopee.rb", "lib/cassiopee-mt.rb", "bin/cassie.rb", "tests/test-suite.rb", "tests/amb.map"]
   s.has_rdoc = true
   s.license = 'LGPL-3'
   s.test_file = 'tests/test-suite.rb'
