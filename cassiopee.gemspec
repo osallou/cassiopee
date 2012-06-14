@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name = %q{cassiopee}
-  s.version = "0.1.9"
-  s.date = %q{2011-10-03}
+  s.version = "0.1.10"
+  s.date = %q{2012-06-14}
   s.authors = ["Olivier Sallou"]
   s.email = %q{olivier.sallou@gmail.com}
   s.summary = %q{Cassiopee index strings and provide exact or approximate search.}
@@ -11,5 +11,5 @@ Gem::Specification.new do |s|
   s.has_rdoc = true
   s.license = 'LGPL-3'
   s.test_file = 'tests/test-suite.rb'
-  s.add_dependency('text', '>= 0.2.0')
+  s.add_dependency('text', '>= 1.2.0')
 end

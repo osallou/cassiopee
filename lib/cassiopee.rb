@@ -2,7 +2,6 @@ require 'digest/md5'
 require 'logger'
 require 'zlib'
 require 'text'
-require 'text/util'
 
 module Cassiopee
 
