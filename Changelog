@@ -1,3 +1,4 @@
+v0.1.11: fix match to text 1.2
 v0.1.9: move demos to bin, to be dir compliant
 v0.1.8: remove rubygems dependency in code.
 v0.1.7: Fix in ambiguity management
