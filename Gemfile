@@ -1,4 +1,7 @@
 source 'https://rubygems.org'
 
-gem 'rake'
+group :development,:test do
+  gem 'rake'
+end
+
 gem 'text'
