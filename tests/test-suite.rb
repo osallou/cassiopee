@@ -20,6 +20,21 @@ class TestCrawler < Test::Unit::TestCase
     #assert_equal(2,match[2].length-1)
   end
 
+  def test_exactsearch2
+    crawler = Cassiopee::Crawler.new
+    crawler.setLogLevel(Logger::DEBUG)
+    crawler.indexString('my sample example')
+    matches = crawler.searchExact('xample')
+    assert_equal(1,matches.length)
+    # Minus 1, because first element is len of match
+    match = crawler.next()
+    puts "## "+match.to_s
+    #assert_equal(2,match[2].length-1)
+    crawler.setLogLevel(Logger::ERROR)
+
+  end
+
+
   def test_ambiguous 
     crawler = Cassiopee::Crawler.new
     crawler.loadAmbiguityFile(File.join(File.dirname(__FILE__), 'amb.map'))

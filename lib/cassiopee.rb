@@ -78,23 +78,23 @@ module Cassiopee
     	
     end
 	
-	private
 	
 	# Compute Levenshtein distance but using a mapping matrix of alphabet ambiguity
 	# Code comes from Text gem, Text::Levenshtein.distance, adapted for ambiguity comparison
 	
     def computeLevenshteinAmbiguous(pattern, edit, ambiguous)
+
+        prepare =
+          if "ruby".respond_to?(:encoding)
+            lambda { |str| str.encode(Encoding::UTF_8).unpack("U*") }
+          else
+            rule = $KCODE.match(/^U/i) ? "U*" : "C*"
+            lambda { |str| str.unpack(rule) }
+          end
+
+        s, t = [self, pattern].map(&prepare)
+
 	
-		encoding = defined?(Encoding) ? self.encoding.to_s : $KCODE
-
-		if Text.encoding_of(self) =~ /^U/i
-			unpack_rule = 'U*'
-		else
-			unpack_rule = 'C*'
-		end
-
-		s = self.unpack(unpack_rule)
-		t = pattern.unpack(unpack_rule)
 		n = s.length
 		m = t.length
 		return m if (0 == n)
@@ -765,7 +765,7 @@ module Cassiopee
 					prev_progress = -1
                		 (minpos..(maxpos)).each do |j|
                		 	# if position+length longer than sequence length, skip it
-               		 	if(j+i>=@sequence.length)
+               		 	if(j+i>@sequence.length)
                		 		next
                		 	end
                     	@suffix = s[j,i]
