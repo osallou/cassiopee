@@ -12,4 +12,7 @@ Gem::Specification.new do |s|
   s.license = 'LGPL-3'
   s.test_file = 'tests/test-suite.rb'
   s.add_dependency('text', '>= 1.2.0')
+
+  s.add_development_dependency 'rake'
+  s.add_development_dependency 'rspec'
 end
