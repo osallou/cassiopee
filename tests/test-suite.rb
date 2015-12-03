@@ -51,6 +51,16 @@ class TestCrawler < Test::Unit::TestCase
     assert_equal(1,matches.length)
   end
 
+  def test_levenshteinsearch2
+    crawler = Cassiopee::Crawler.new
+    crawler.indexString('aaaaacgtttttt')
+    matches = crawler.searchApproximate('ac',0)
+    matches.each do |match|
+      puts "###"+match.to_s 
+    end
+    assert_equal(1,matches.length)
+  end
+
   def test_directmethod
     crawler = Cassiopee::Crawler.new
     crawler.method = Cassiopee::Crawler::METHOD_DIRECT
