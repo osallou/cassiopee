@@ -4,7 +4,7 @@ $:.unshift '../lib'
 require 'cassiopee-mt'
 require 'logger'
 
-# Instanciate a new crawler
+# Instantiate a new crawler
 crawler = CassiopeeMt::CrawlerMt.new
 crawler.setLogLevel(Logger::INFO)
 crawler.maxthread=3
