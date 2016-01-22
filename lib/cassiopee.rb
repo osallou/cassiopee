@@ -671,7 +671,7 @@ module Cassiopee
 				return false
 			end
 			
-			# check if string is approximatly equal to pattern
+			# check if string is approximately equal to pattern
 			# s: string to compare
 			# pattern: base pattern used
 			# useHamming: use Hamming or edit distance

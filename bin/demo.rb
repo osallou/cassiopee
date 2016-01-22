@@ -3,7 +3,7 @@ $:.unshift '../lib'
 require 'cassiopee'
 require 'logger'
 
-# Instanciate a new crawler
+# Instantiate a new crawler
 crawler = Cassiopee::Crawler.new
 #crawler.use_store = true
 
@@ -23,7 +23,7 @@ puts "Hamming: " << test.computeHamming("my strigg",1).to_s
 
 puts "Levenshtein: " << test.computeLevenshtein("mystriigg",3).to_s
 
-# Approcimate search, edit distance = 1
+# Approximate search, edit distance = 1
 crawler.searchApproximate("llu",-2)
 
 # Go through matches
