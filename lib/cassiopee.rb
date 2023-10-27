@@ -178,7 +178,7 @@ module Cassiopee
 	
 		# Loads cache from file
 		def loadCache
-            	return Array.new unless File.exists?(@file_suffix+FILE_CACHE_EXT)
+            	return Array.new unless File.exist?(@file_suffix+FILE_CACHE_EXT)
                 begin
                   file = Zlib::GzipReader.open(@file_suffix+FILE_CACHE_EXT)
                 rescue Zlib::GzipFile::Error
@@ -204,7 +204,7 @@ module Cassiopee
 		end
 		
 		def clearCache
-			File.delete(@file_suffix+FILE_CACHE_EXT) unless !File.exists?(@file_suffix+FILE_CACHE_EXT)
+			File.delete(@file_suffix+FILE_CACHE_EXT) unless !File.exist?(@file_suffix+FILE_CACHE_EXT)
 		end
 		
 		private
@@ -344,7 +344,7 @@ module Cassiopee
 			@prev_max_position = 0
 			@prev_min_position = 0
 			@cache.clearCache()
-        	File.delete(@file_suffix+FILE_SUFFIX_POS) unless !File.exists?(@file_suffix+FILE_SUFFIX_POS)
+        	File.delete(@file_suffix+FILE_SUFFIX_POS) unless !File.exist?(@file_suffix+FILE_SUFFIX_POS)
         end
     
     	# Set Logger level
@@ -388,7 +388,7 @@ module Cassiopee
 		#   ...
 		
 		def loadAmbiguityFile(f)
-		  if(!File.exists?(f))
+		  if(!File.exist?(f))
 		     $log.error("File "<< f << "does not exists")
 			 exit(1)
 		  end
@@ -853,7 +853,7 @@ module Cassiopee
                  sequence = ''
                     begin
                         file = File.new(s, "r")
-                        File.delete(@file_suffix+FILE_SUFFIX_EXT) unless !File.exists?(@file_suffix+FILE_SUFFIX_EXT)
+                        File.delete(@file_suffix+FILE_SUFFIX_EXT) unless !File.exist?(@file_suffix+FILE_SUFFIX_EXT)
 						File.open(@file_suffix+FILE_SUFFIX_EXT, 'w') do |data|
                     	  while (line = file.gets)
                     			counter = counter + 1
@@ -886,7 +886,7 @@ module Cassiopee
             # Load suffix position file in memory 
             
             def loadSuffixes(file_name)
-            	return Hash.new unless File.exists?(@file_suffix+FILE_SUFFIX_POS)
+            	return Hash.new unless File.exist?(@file_suffix+FILE_SUFFIX_POS)
                 begin
                   file = Zlib::GzipReader.open(file_name)
                 rescue Zlib::GzipFile::Error
